@@ -13,9 +13,7 @@ GPT를 이용한 자소서 첨삭 웹. GITHUB와 유사하게 버전 관리와 �
 <img src="https://img.shields.io/badge/Django-092E20?style=flat&logo=django&logoColor=white" />
 <img src="https://img.shields.io/badge/DRF-E01F3D?style=flat&logo=django&logoColor=white" />
 <img src="https://img.shields.io/badge/Openai-412991?style=flat&logo=openai&logoColor=white" />
-<img src="https://img.shields.io/badge/Opencv-5C3EE8?style=flat&logo=opencv&logoColor=white" />
   <br>
-<img src="https://img.shields.io/badge/NaverOCR-03C75A?style=flat&logo=naver&logoColor=white" />
 <img src="https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white" />
   <br>
     <br>
