@@ -3,11 +3,11 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import SignupCard from './componets/UI/SigninCard';
+import SignupCard from './componets/UI/SignupCard';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <SignupCard />
+    <App/>
   </React.StrictMode>
 );
 
