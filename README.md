@@ -28,12 +28,6 @@ GPT를 이용한 자소서 첨삭 웹. GITHUB와 유사하게 버전 관리와 �
 </div>
   <br>
     <br>
-
-<div align="center">
-  <h3>Data Flow</h3>
-  <img src="https://github.com/baejun10/ProductCompare-Backend/assets/61408221/af3900d0-ab9b-4386-9ea3-95c8a2a3e536">
-  <a href="https://www.figma.com/file/jaXOieLasXfMDewx8WwuVM/Lettuce?type=whiteboard&node-id=0%3A1&t=vGL3C92omx0620C2-1">https://www.figma.com/file/jaXOieLasXfMDewx8WwuVM/Lettuce?type=whiteboard&node-id=0%3A1&t=vGL3C92omx0620C2-1</a>
-</div>
 </body>
 
 </html>
