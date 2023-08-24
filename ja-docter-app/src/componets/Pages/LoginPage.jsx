@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import LoginCard from '../UI/LoginCard'
 import styled from "styled-components"
-
+import SignupCard from '../UI/SignupCard';
 /**
  * 
  * 로그인 정상 동작을 확인하기위한 임시 컨테이너
@@ -20,10 +20,24 @@ const Container = styled.div`
  * 
  */
 export default function LoginPage() {
-  return (
+
+    /**
+     * 로그인 회원가입 카드를 각각 랜더링할지 안할지를 관리하는 state 
+     */
+    const [loginmode, setLoginmode] = useState(true)
+
+    /** 각 로그인 / 회원가입카드의 props로 넘겨줄 modeChange함수 */
+    const handleMode = () => {
+        setLoginmode(!loginmode)
+    }
+    return (
     
-    <Container>
-        <LoginCard></LoginCard>
-    </Container>
-  )
+        <Container>
+            {loginmode? (
+            <LoginCard handleMode = {handleMode}></LoginCard>
+            ):(
+            <SignupCard handleMode = {handleMode}></SignupCard>)}
+            
+        </Container>
+    )
 }

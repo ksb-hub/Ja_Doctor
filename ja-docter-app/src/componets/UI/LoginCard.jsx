@@ -7,9 +7,9 @@ import { useNavigate } from "react-router-dom";
 import { login } from "../../APIs/Auth";
 import { AuthContext } from "../../App";
 const Container = styled.div`
-    border: 2px solid #19ce60;
+    border: 2px solid #7D7C7C;
     width: 500px;
-    height: 425px;
+    height: 70vh;
     padding: 20px;
     border-radius: 14px;
     box-sizing: border-box;
@@ -17,14 +17,28 @@ const Container = styled.div`
     flex-direction: column;
     align-items: center;
 `;
-const ButtonWrapper = styled.div``;
+
+const TitleWrapper = styled.div`
+  color: #F0790A;
+  font-size: 36px;
+  margin-bottom: 28px;
+`
+const ButtonWrapper = styled.div`
+    width: 91%;
+    background-color: #F0790A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    margin-bottom: 33px;
+`;
 const Input = styled.input`
     padding: 4px;
     font-size: 18px;
     display: block;
     width: 440px;
-    height: 47px;
-    border: 2px solid #19ce60;
+    height: 52px;
+    border: 2px solid #7D7C7C;
     border-radius: 14px;
     box-sizing: border-box;
     &:focus {
@@ -33,9 +47,46 @@ const Input = styled.input`
     &::placeholder {
         font-size: 12px;
     }
-    margin-bottom: 1px;
 `;
+
+const LineWrapper = styled.div`
+  position: relative;
+  height: 4px;
+  width: 100%;
+  margin-bottom: 24px;
+`;
+
+const Line = styled.div`
+  width: 100%;
+  height: 1px;
+  background-color: #ccc;
+  content: "1";
+
+`;
+
+const TextBox = styled.div`
+  width: 80px;
+  background-color: #fff;
+  position: absolute;
+  z-index: 1;
+  text-align: center;
+  left: 41%;
+  bottom: -6px;
+`;
+
+const ToSignupNavigator = styled.div`
+    width: 91%;
+    background-color: #ccc;
+    border-radius: 14px;
+    margin-top: 22px;
+    display: flex;
+    justify-content: center;
+    font-size: 24px;
+    padding: 4px 8px;
+`;
+
 function LoginCard(props) {
+    const handleMode = props.handleMode
     const [isLoggedIn, setIsLoggedIn] = useContext(AuthContext);
     const [formData, setFormData] = useState({
         id: "",
@@ -88,6 +139,10 @@ function LoginCard(props) {
 
     return (
         <Container>
+
+            <TitleWrapper>
+                Ja-Docter
+            </TitleWrapper>
             <form>
                 <Input
                     type="text"
@@ -121,79 +176,46 @@ function LoginCard(props) {
             </form>
 
             <ButtonWrapper
-                style={{
-                    width: "98%",
-                    height: "64px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "flex-end",
-                    gap: "85px",
-                    // border: '4px solid red',
-                    marginBottom: "8px",
-                }}
+
             >
                 <Button
                     style={{
-                        marginLeft: "20px",
                         position: "absolute",
                         left: "10px",
                         top: "10px", // 버튼을 아래로 이동시킴
                     }}
                     title={" 로그인 "}
-                    bgcolor={"#02C75A"}
+                    size = {32}
+                    bgcolor={"#F0790A"}
                     color={"#ffffff"}
                     onClick={handleSubmit}
                 />
-
-                <Button
-                    style={{
-                        marginTop: "20px",
-                        position: "absolute",
-                        top: "1px",
-                    }}
-                    title={"회원가입"}
-                    bgcolor={"#6F6B6B"}
-                    color={"#ffffff"}
-                    onClick={() => {
-                        // alert('회원가입 버튼 클릭')
-                        navigate("/signup");
-                    }}
-                />
             </ButtonWrapper>
 
-            <div className="social-login">
-                <a
-                    className="kakao-login"
-                    href="javascript:void(0)"
-                    style={{
-                        display: "block",
-                        width: "440px",
-                        height: "54px",
-                        backgroundImage: `url(${image2})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                        backgroundRepeat: "no-repeat",
-                        borderRadius: "25px",
-                        marginBottom: "18px",
-                    }}
-                ></a>
-                <a
-                    className="naver-login"
-                    href="javascript:void(0)"
-                    style={{
-                        backgroundColor: "#02C75A",
-                        display: "block",
-                        width: "440px",
-                        height: "54px",
-                        backgroundImage: `url(${image1})`,
-                        backgroundSize: "340px 60px",
-                        backgroundPosition: "center",
-                        backgroundRepeat: "no-repeat",
-                        borderRadius: "25px",
-                    }}
-                ></a>
-            </div>
+            <LineWrapper>
+              <Line></Line>
+              <TextBox>또는</TextBox>
+            </LineWrapper>
+
+            <ToSignupNavigator>
+                <div>
+                    계정이 없으신가요?
+                </div>
+                <div
+                    style = {{
+                        textDecoration: 'underline',
+                        color: 'royalblue',
+                        cursor: 'pointer',
+                        marginLeft: '15px',
+                           }}
+                    onClick = {handleMode}
+                >
+                    회원가입하기
+                </div>
+            </ToSignupNavigator>
+            
         </Container>
+
     );
 }
 

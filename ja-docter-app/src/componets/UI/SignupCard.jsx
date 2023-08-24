@@ -69,6 +69,7 @@ const TextBox = styled.div`
   bottom: -6px;
 `;
 function SignupCard(props) {
+    const handleMode = props.handleMode
     const [formData, setFormData] = useState({
         id: "",
         password: "",
@@ -168,7 +169,10 @@ function SignupCard(props) {
                     title={" 회원가입 "}
                     bgcolor={"#F0790A"}
                     color={"#ffffff"}
-                    onClick={handleSubmit}
+                    onClick={()=>{
+                        handleSubmit()
+                        handleMode()
+                    }}
                     radius = {24}
                     shadow = {false}
                     hover = {false}
