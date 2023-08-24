@@ -4,7 +4,7 @@ GPT를 이용한 자소서 첨삭 웹. GITHUB와 유사하게 버전 관리와 �
 <html>
 
 <body align="center">
-<img src="https://capsule-render.vercel.app/api?type=waving&color=auto&height=300&section=header&text=Lettuce%20Github&fontSize=90">
+<img src="https://capsule-render.vercel.app/api?type=waving&color=auto&height=300&section=header&text=Ja-Doctor%20Github&fontSize=90">
 <h3 align="center">📚Tech stack</h3>
 
 <div align="center">
