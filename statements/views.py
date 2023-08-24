@@ -63,3 +63,4 @@ class StatementRetrieveAPIView(APIView):
         statement = get_object_or_404(Statement, id=statement_id)
         statement.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
