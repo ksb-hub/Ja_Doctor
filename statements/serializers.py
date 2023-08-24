@@ -7,9 +7,9 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['id', 'content', 'edited_at', 'duration', 'version_info']
-        extra_kwargs = {
-            'version_info': {'read_only': True},
-        }
+        # extra_kwargs = {
+        #     'version_info': {'read_only': True},
+        # }
 
 
 class StatementSerializer(serializers.ModelSerializer):
