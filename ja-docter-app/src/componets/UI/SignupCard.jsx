@@ -6,25 +6,29 @@ import Button from './Button'
 import { register } from '../../APIs/Auth'
 
 const Container = styled.div`
-    border: 2px solid #19ce60;
+    border: 2px solid #7D7C7C;
     width: 500px;
-    height: 425px;
-    padding: 20px;
+    height: 530px;
+    padding: 10px;
     border-radius: 14px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
 `;
-const ButtonWrapper = styled.div``;
+const ButtonWrapper = styled.div`
+  &:hover {
+    background-color: #ddd0c3;
+  }
+`;
 const Input = styled.input`
     padding: 4px;
     font-size: 18px;
     display: block;
     width: 440px;
     height: 47px;
-    border: 2px solid #19ce60;
-    border-radius: 14px;
+    border: 2px solid #7D7C7C;
+    border-radius: 10px;
     box-sizing: border-box;
     &:focus {
         outline: none;
@@ -32,9 +36,38 @@ const Input = styled.input`
     &::placeholder {
         font-size: 12px;
     }
-    margin-bottom: 1px;
 `;
 
+const TitleWrapper = styled.div`
+  color: #F0790A;
+  font-size: 48px;
+  margin-bottom: 28px;
+`
+
+const LineWrapper = styled.div`
+  position: relative;
+  height: 4px;
+  width: 100%;
+  margin-bottom: 24px;
+`;
+
+const Line = styled.div`
+  width: 100%;
+  height: 1px;
+  background-color: #ccc;
+  content: "1";
+
+`;
+
+const TextBox = styled.div`
+  width: 80px;
+  background-color: #fff;
+  position: absolute;
+  z-index: 1;
+  text-align: center;
+  left: 41%;
+  bottom: -6px;
+`;
 function SignupCard(props) {
     const [formData, setFormData] = useState({
         id: "",
@@ -75,6 +108,10 @@ function SignupCard(props) {
     };
     return (
         <Container>
+
+          <TitleWrapper>
+            회원가입
+          </TitleWrapper>
             <form>
                 <Input
                     type="text"
@@ -108,14 +145,16 @@ function SignupCard(props) {
 
             <ButtonWrapper
                 style={{
-                    width: "98%",
+                    width: "91%",
+                    borderRadius: '24px',
                     height: "64px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     gap: "85px",
                     // border: '4px solid red',
-                    marginBottom: "8px",
+                    backgroundColor: '#F0790A',
+                    margin: "16px 0",
                 }}
             >
                 <Button
@@ -124,14 +163,22 @@ function SignupCard(props) {
                         position: "absolute",
                         left: "10px",
                         top: "10px", // 버튼을 아래로 이동시킴
+                        
                     }}
                     title={" 회원가입 "}
-                    bgcolor={"#02C75A"}
+                    bgcolor={"#F0790A"}
                     color={"#ffffff"}
                     onClick={handleSubmit}
+                    radius = {24}
+                    shadow = {false}
+                    hover = {false}
                 />
             </ButtonWrapper>
-
+            
+            <LineWrapper>
+              <Line></Line>
+              <TextBox>또는</TextBox>
+            </LineWrapper>
             <div className="social-signup">
                 <a
                     className="kakao-signup"

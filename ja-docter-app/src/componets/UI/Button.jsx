@@ -4,7 +4,7 @@ import styled from "styled-components"
 
 const StyleButton = styled.div`
   padding: 8px 16px;
-  box-shadow: 3px 3px 3px #636262;
+  box-shadow: ${props => props.shadow && '3px 3px 3px #636262'};
   font-size: ${props => `${1 + props.size}px`};
   border-width: 1px;
   background-color: ${props => props.bgcolor || '#ffffff'};
@@ -12,13 +12,15 @@ const StyleButton = styled.div`
   border-radius: ${props => `${props.radius}px` || '25px'};
   cursor: pointer;
   &:hover {
-    background-color: ${props => props.hoverColor || '#0dbf4b'};
+    ${props => props.hover && `
+      background-color: ${props.hoverColor || '#85420b'};
+    `}
   }
 `;
 function Button(props){
 
 
-    const {size, title, bgcolor, color, onClick, radius, hovercolor=''} = props;
+    const {size, title, bgcolor, color, onClick, radius, hovercolor='', shadow, hover} = props;
     return (
         <StyleButton 
                 size = {size}
@@ -27,6 +29,8 @@ function Button(props){
                 radius = {radius}
                 hoverColor = {hovercolor}
                 onClick= {onClick}
+                shadow = {shadow}
+                hover = {hover}
             >{title || {title}}</StyleButton>
     )
             
