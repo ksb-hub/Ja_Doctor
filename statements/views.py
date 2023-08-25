@@ -111,3 +111,4 @@ class SpellCheckAPIView(APIView):
         post.save()
         serializer = PostSerializer(post)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
