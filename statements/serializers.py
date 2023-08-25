@@ -31,3 +31,7 @@ class StatementRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Statement
         fields = ['title']
+
+
+class SpellCheckSerializer(serializers.Serializer):
+    text = serializers.CharField(max_length=15000)

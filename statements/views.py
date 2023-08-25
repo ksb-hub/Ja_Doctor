@@ -5,7 +5,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from statements.models import Post, Statement
-from statements.serializers import StatementSerializer, StatementRetrieveSerializer, PostSerializer
+from statements.py_hanspell import return_text500, spell_checker
+from statements.serializers import StatementSerializer, StatementRetrieveSerializer, PostSerializer, \
+    SpellCheckSerializer
 
 
 class PostListAPIView(APIView):
@@ -94,3 +96,18 @@ class StatementRetrieveAPIView(APIView):
         statement.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
+class SpellCheckAPIView(APIView):
+    @swagger_auto_schema(tags=["post_detail"])
+    def get(self, request, statement_id, post_id):
+        post = get_object_or_404(Post, id=post_id)
+        checked_text = ''
+        text_chunk_list = return_text500.operator(post.content)
+        for text_chunk in text_chunk_list:
+            checked_chunk = spell_checker.check(text_chunk)
+            checked_text += checked_chunk
+
+        post.content = checked_text
+        post.save()
+        serializer = PostSerializer(post)
+        return Response(serializer.data, status=status.HTTP_200_OK)
