@@ -17,10 +17,23 @@ const StyleButton = styled.div`
     `}
   }
 `;
+/**
+ * 
+ * @param  props 
+ * 1. size (폰트사이즈)
+ * 2. title (버튼안에 들어갈 글자)
+ * 3. bgcolor (버튼안에 배경색)
+ * 4. color (글자 색)
+ * 5. onClick(클릭했을때 동작하는 함수)
+ * 6. radius
+ * 7. hovercolor(마우스 오버 이벤트시 바뀔 배경색)
+ * 8. hover (true / false 로 비/활성화)
+ * @returns 
+ */
 function Button(props){
 
 
-    const {size, title, bgcolor, color, onClick, radius, hovercolor='', shadow, hover} = props;
+    const {size, title, bgcolor, color, onClick, radius, hovercolor, shadow, hover = false} = props;
     return (
         <StyleButton 
                 size = {size}
