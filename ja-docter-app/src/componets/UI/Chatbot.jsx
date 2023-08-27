@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import styled from "styled-components"
 import ChatBotSwitch from "../../images/ChatBotSwitch.png";
 import submitButton from "../../images/message-submit.png"
-
+import postSample from "../../VirtualData/postsample.json"
 const Container = styled.div`
     width: 464px;
     height: 554px;
@@ -35,7 +35,7 @@ const ChatAllContainer = styled.div`
     display: flex;
     flex-direction: column;
     gap: 3px;
-
+    padding: 9px 0;
 `;
 /**
  * 채팅박스 한개를 감싸서 왼쪽 or 오른쪽으로 배치후 감싸는 컨테이너
@@ -97,6 +97,11 @@ const ImageWrapper = styled.div`
 
 
 function Chatbot(){
+    const samplePostMessage = {
+        isSent: true,
+        timeStamp : new Date(),
+        contents: postSample.content
+    }
     /**
      * 챗봇 비/ 활성화 관리 State
      */
@@ -120,7 +125,7 @@ function Chatbot(){
         timeStamp: new Date(),
         contents: "안녕하세요 자소서 닥터입니다!!! 어떤것을 도와드릴까요???" 
     }
-    const [messages, setMessages] = useState([startMessage])
+    const [messages, setMessages] = useState([startMessage, samplePostMessage])
 
     /** 
      * 챗봇을 비/활성화 스위치 관리 함수
@@ -150,6 +155,9 @@ function Chatbot(){
             console.log(`메시지들 출력 ${messages}`)
         }
     }
+    
+    
+    
     return (
         <Container>
         {switchOn ? (
