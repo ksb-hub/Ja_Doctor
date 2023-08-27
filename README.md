@@ -24,6 +24,10 @@ GPT를 이용한 자소서 첨삭 웹. GITHUB와 유사하게 버전 관리와 �
 </div>
   <br>
     <br>
+
+<img src="https://github-readme-stats.vercel.app/api/top-langs/?username=ksb-hub&layout=compact"><br><br>
+<img src="https://github-readme-stats.vercel.app/api?username=ksb-hub&show_icons=true">
+
 </body>
 
 </html>
