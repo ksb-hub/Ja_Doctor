@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const baseURL = "http://43.200.184.226/api"
+const baseURL = "/api"
 const axiosInstance = axios.create({
     // baseURL: 'your_base_url_here',
     withCredentials: true,
@@ -22,6 +22,7 @@ const getStatementList = () =>{
 
     axiosInstance.get(apiURL)
     .then(response =>{
+        console.log(response.data)
         return(response.data)
     }    
     )
@@ -35,19 +36,19 @@ const getStatementList = () =>{
  * @return parm으로 받은 statementID에 해당하는statment를 리턴한다!!!
  * 실패시 콘솔창에 실패메시지 + error코드 뜸
  */
-const getStatement = (statementID) => {
-    const apiURL = baseURL + `/statement/${statementID}/`
+const getStatement = async (statementID) => {
+    const apiURL = baseURL + `/statement/${statementID}/`;
+    console.log(`요청주소 ${apiURL}`);
 
-    axiosInstance.get(apiURL)
-    .then(response =>{
-        return(response.data)
-    }    
-    )
-    .catch(error => {
-        console.log(error)
-        console.log('getStatement 실패!!!')
-    })
-}
+    try {
+        const response = await axiosInstance.get(apiURL);
+        console.log(response.data);
+        return response.data;
+    } catch (error) {
+        console.log(error);
+        console.log('getStatement 실패!!!');
+    }
+};
 /**
  * @param statementID (num)
  * @return
@@ -59,6 +60,7 @@ const getPostList = (statementID) => {
 
     axiosInstance.get(apiURL)
     .then(response =>{
+        console.log(response.data)
         return(response.data)
     }    
     )
@@ -151,12 +153,23 @@ const createpost = (statementID, content, versionInfo) => {
 
 }
 /**
- * statement를 새로 만드는 API
+ * 
+ * @param {*} title 
+ * @param {*} content 
  */
-const createStatement = () => {
+const createStatement = (title, content) => {
     const apiURL = baseURL + `/statement/`;
+    const requsePost = {
+        "content": content
+    }
     
-    axiosInstance.post(apiURL)
+    const requestData = {
+        "title": title,
+        "posts": [requsePost]
+    }
+    const finaldata = JSON.stringify(requestData)
+    console.log(finaldata)
+    axiosInstance.post(apiURL, finaldata)
     .then(response =>{
         return(response.data)
     })

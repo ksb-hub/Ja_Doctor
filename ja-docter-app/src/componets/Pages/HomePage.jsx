@@ -39,7 +39,7 @@ const Container = styled.div`
           title = "createStatement API호출!!"
           onClick = {() => {
             console.log()
-            createStatement()
+            createStatement(title, sample1.content)
           }}
           bgcolor = {"#D9D9D9"}
           hovercolor={"#b0b0b0"}
@@ -79,16 +79,18 @@ const Container = styled.div`
         </Button>
 
         <Button
-          title = "getPostList API호출!!"
-          onClick = {() => {
-            console.log(getPostList(statementID))
-            
+          title="getPostList API호출!!"
+          onClick={async () => {
+            try {
+              const statementData = await getStatement(statementID); // await를 사용하여 데이터 받아오기
+              console.log(statementData);
+            } catch (error) {
+              console.error(error);
+            }
           }}
-          bgcolor = {"#D9D9D9"}
-          hovercolor={"#b0b0b0"}
-        >
-
-        </Button>
+          bgcolor="#D9D9D9"
+          hovercolor="#b0b0b0"
+      />
 
         <Button
           title = "updatePost API호출!!"
