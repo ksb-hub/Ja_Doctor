@@ -37,9 +37,9 @@ const Container = styled.div`
         ></Button>
         <Button
           title = "createStatement API호출!!"
-          onClick = {() => {
-            console.log()
-            createStatement(title, sample1.content)
+          onClick = {async () => {
+            const resData = await createStatement(title, sample1.content, versionInfo)
+            console.log(resData)
           }}
           bgcolor = {"#D9D9D9"}
           hovercolor={"#b0b0b0"}
@@ -48,8 +48,9 @@ const Container = styled.div`
 
         <Button
           title = "createpost API호출!!"
-          onClick = {() => {
-            console.log(createpost(statementID, sample1.content, "테스트 버전1"))
+          onClick = {async () => {
+            const resData = await createpost(statementID, sample1.content, "테스트 버전1")
+            console.log(resData)
             
           }}
           bgcolor = {"#D9D9D9"}
@@ -58,8 +59,9 @@ const Container = styled.div`
         </Button>
         <Button
           title = "getStatementList API호출!!"
-          onClick = {() => {
-            console.log(getStatementList())
+          onClick = {async () => {
+            const resData = await getStatementList()
+            console.log(resData)
             
           }}
           bgcolor = {"#D9D9D9"}
@@ -68,8 +70,9 @@ const Container = styled.div`
         </Button>
         <Button
           title = "getStatement API호출!!"
-          onClick = {() => {
-            console.log(getStatement(statementID))
+          onClick = {async () => {
+            const resData = await getStatement(3)
+            console.log(resData)
             
           }}
           bgcolor = {"#D9D9D9"}
@@ -81,12 +84,8 @@ const Container = styled.div`
         <Button
           title="getPostList API호출!!"
           onClick={async () => {
-            try {
-              const statementData = await getStatement(statementID); // await를 사용하여 데이터 받아오기
-              console.log(statementData);
-            } catch (error) {
-              console.error(error);
-            }
+            const resData = await getPostList(3)
+            console.log(resData)
           }}
           bgcolor="#D9D9D9"
           hovercolor="#b0b0b0"
@@ -94,9 +93,9 @@ const Container = styled.div`
 
         <Button
           title = "updatePost API호출!!"
-          onClick = {() => {
-            console.log(updatePost(statementID, postID, sample1.content, versionInfo))
-            
+          onClick = {async() => {
+            const resData = await (updatePost(3, postID, sample1.content, versionInfo))
+            console.log(resData)
           }}
           bgcolor = {"#D9D9D9"}
           hovercolor={"#b0b0b0"}
@@ -105,9 +104,9 @@ const Container = styled.div`
 
         <Button
           title = "updateStatement API호출!!"
-          onClick = {() => {
-            console.log(updateStatement(statementID, title))
-            
+          onClick = {async () => {
+            const resData = await updateStatement(3, title)
+            console.log(resData)
           }}
           bgcolor = {"#D9D9D9"}
           hovercolor={"#b0b0b0"}
@@ -116,9 +115,9 @@ const Container = styled.div`
 
         <Button
           title = "deleteStatement API호출!!"
-          onClick = {() => {
-            console.log(deleteStatement(statementID, title))
-            
+          onClick = {async () => {
+            const resData = await deleteStatement(3, title)
+            console.log(resData)
           }}
           bgcolor = {"#D9D9D9"}
           hovercolor={"#b0b0b0"}

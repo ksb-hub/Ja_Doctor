@@ -12,18 +12,18 @@ const axiosInstance = axios.create({
 // GET APIs
 
 /**
+ * @return user의 모든 statement List형태로 리턴
  * @param NONE
- * @return
  * user의 Statement리스트를 리턴한다!!!
  * 실패시 콘솔창에 실패메시지 + error코드 뜸
  */
 const getStatementList = () =>{
     const apiURL = baseURL + `/statement/`
 
-    axiosInstance.get(apiURL)
+    return axiosInstance.get(apiURL)
     .then(response =>{
         console.log(response.data)
-        return(response.data)
+        return(response)
     }    
     )
     .catch(error => {
@@ -34,34 +34,31 @@ const getStatementList = () =>{
 /**
  * @param statementID (num)
  * @return parm으로 받은 statementID에 해당하는statment를 리턴한다!!!
- * 실패시 콘솔창에 실패메시지 + error코드 뜸
+ *
  */
 const getStatement = async (statementID) => {
     const apiURL = baseURL + `/statement/${statementID}/`;
-    console.log(`요청주소 ${apiURL}`);
 
-    try {
-        const response = await axiosInstance.get(apiURL);
-        console.log(response.data);
-        return response.data;
-    } catch (error) {
-        console.log(error);
-        console.log('getStatement 실패!!!');
-    }
+    return axiosInstance.get(apiURL, statementID)
+    .then(response =>{
+        return(response)
+    })
+    .catch(error =>{
+        console.log(error)
+        console.log('getStatement실패!!')
+    })
 };
 /**
  * @param statementID (num)
- * @return
- * parm으로 받은 statementID에 해당하는statment의 post를 모두 리턴한다!!!
+ * @return statementID에 해당하는statment의 post를 배열형태로 모두 리턴한다!!!
  * 실패시 콘솔창에 실패메시지 + error코드뜸
  */
 const getPostList = (statementID) => {
     const apiURL = baseURL + `/statement/${statementID}/post/`
 
-    axiosInstance.get(apiURL)
+    return axiosInstance.get(apiURL)
     .then(response =>{
-        console.log(response.data)
-        return(response.data)
+        return(response)
     }    
     )
     .catch(error => {
@@ -75,6 +72,7 @@ const getPostList = (statementID) => {
 
 /**
  * 매개변수로 받은 key에 해당하는 post의 content와 versionInfo로 수정함
+ * @return updating post objcet
  * @param statementID 
  * @param postID 
  * @param content 
@@ -83,16 +81,16 @@ const getPostList = (statementID) => {
  *  
  */
 const updatePost = (statementID, postID, content,versionInfo) => {
-    const apiURL = baseURL + `statement/${statementID}/post/${postID}/`;
+    const apiURL = baseURL + `/statement/${statementID}/post/${postID}/`;
     const requestData = {
         "content": content,
         "version_info": versionInfo
     }
     const finaldata = JSON.stringify(requestData)
     console.log(finaldata)
-    axiosInstance.put(apiURL, finaldata)
+    return axiosInstance.put(apiURL, finaldata)
     .then(response =>{
-        return(response.data)
+        return(response)
     })
     .catch(error => {
         console.log(error)
@@ -102,23 +100,21 @@ const updatePost = (statementID, postID, content,versionInfo) => {
 }
 /**
  * Statement를 update하는 함수
- * 
- * @return 
- * 
+ * @return statment.title
  * @param {} statementID 
  * @param {} title 
  * 
  */
 const updateStatement = (statementID, title) => {
-    const apiURL = baseURL + `statement/${statementID}/`;
+    const apiURL = baseURL + `/statement/${statementID}/`;
     const requestData = {
         "title": title
     }
     const finaldata = JSON.stringify(requestData)
     console.log(finaldata)
-    axiosInstance.put(apiURL, finaldata)
+    return axiosInstance.put(apiURL, finaldata)
     .then(response =>{
-        return(response.data)
+        return(response)
     })
     .catch(error => {
         console.log(error)
@@ -128,7 +124,7 @@ const updateStatement = (statementID, title) => {
 // Post APIs
 
 /**
- * 
+ * @return POST요청으로 만든 post객체 data 리턴!!
  * @param {*} statementID 
  * @param {*} content 
  * @param {*} versionInfo 
@@ -141,9 +137,9 @@ const createpost = (statementID, content, versionInfo) => {
     }
     const finaldata = JSON.stringify(requestData)
     console.log(finaldata)
-    axiosInstance.post(apiURL, finaldata)
+    return axiosInstance.post(apiURL, finaldata)
     .then(response =>{
-        return(response.data)
+        return(response)
     })
     .catch(error => {
         console.log(error)
@@ -153,11 +149,12 @@ const createpost = (statementID, content, versionInfo) => {
 
 }
 /**
- * 
+ * @return reponse.data로 statment.title과 post객체정보 리턴
  * @param {*} title 
  * @param {*} content 
+ * @param {*} versionInfo
  */
-const createStatement = (title, content) => {
+const createStatement = (title, content, versionInfo) => {
     const apiURL = baseURL + `/statement/`;
     const requsePost = {
         "content": content
@@ -165,11 +162,12 @@ const createStatement = (title, content) => {
     
     const requestData = {
         "title": title,
-        "posts": [requsePost]
+        "posts": [requsePost],
+        "versionInfo" : versionInfo 
     }
     const finaldata = JSON.stringify(requestData)
     console.log(finaldata)
-    axiosInstance.post(apiURL, finaldata)
+    return axiosInstance.post(apiURL, finaldata)
     .then(response =>{
         return(response.data)
     })
@@ -181,7 +179,7 @@ const createStatement = (title, content) => {
 }
 //delete APIs
 /**
- * Statement를 제거하는 API
+ * @returns NONe
  * @param {*} statementID 
  * @param {*} title 
  */
@@ -192,9 +190,9 @@ const deleteStatement = (statementID, title) => {
     }
     const finaldata = JSON.stringify(requestData)
     console.log(finaldata)
-    axiosInstance.post(apiURL, finaldata)
+    return axiosInstance.delete(apiURL, finaldata)
     .then(response =>{
-        return(response.data)
+        return(response)
     })
     .catch(error => {
         console.log(error)
