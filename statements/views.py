@@ -127,8 +127,6 @@ class CallGPTAPIView(APIView):
         serializer = GetContentSerializer(data=request.data)
         if serializer.is_valid():
             res = get_advice(serializer.data['content'], serializer.data['order'])
-            print(res)
-            print(type(res))
             return Response(json.loads(res), status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

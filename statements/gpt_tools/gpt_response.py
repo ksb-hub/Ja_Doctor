@@ -28,11 +28,10 @@ def get_key():
 
 def get_param():
     parameters = {
-        "temperature": 0.9,
-        "top_p": 0.8,
+        "temperature": 1.15,
+        "top_p": 0.7,
         "frequency_penalty": 1,
         "presence_penalty": 0.85,
-        "max_tokens": 15000,
     }
 
     return parameters
@@ -70,9 +69,18 @@ def get_schema():
     return schema
 
 
+# preprocessing v1
 def preprocessing(data):
     cleared_data = data.replace(',\n  }', '\n  }')
-    return cleared_data
+    cleared_data = cleared_data.replace('\\ n \\', '\\n')
+    cleared_data = cleared_data.replace('\\ n', '\\n')
+    cleared_data = cleared_data.replace('\\N', '\\n')
+    cleared_data = cleared_data.replace('\\n\\\n', '\\n\\n')
+
+    error_count_open = cleared_data.count('{')
+    error_count_close = cleared_data.count('}')
+    if error_count_close != error_count_open:
+        cleared_data +=  '"'+'}'* (error_count_open-error_count_close)
 
 
 # A function for gpt learning direction
@@ -94,7 +102,8 @@ def call_gpt(content, order):
             {
                 "role": "system",
                 "content": "Suppose you are an expert who corrects and" +
-                           " the letter of self-introduction and add texts to your request."
+                           " the letter of self-introduction and add texts to your request." +
+                           " Please return it in a form that allows JSON parsing"
             },
             {
                 "role": "user",
@@ -117,10 +126,9 @@ def call_gpt(content, order):
         top_p=parameters["top_p"],
         frequency_penalty=parameters["frequency_penalty"],
         presence_penalty=parameters["presence_penalty"],
-        max_tokens=parameters["max_tokens"],
     )
 
-    res = response["choices"][0]["message"]["function_call"]["arguments"]
+    res = response["choices"][0]["message"]["function_call"]["arguments"].strip()
 
     advice = preprocessing(res)
     return advice
