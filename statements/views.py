@@ -1,3 +1,5 @@
+import json
+
 from django.shortcuts import get_object_or_404
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
@@ -7,7 +9,9 @@ from rest_framework.views import APIView
 from statements.models import Post, Statement
 from statements.py_hanspell import return_text500, spell_checker
 from statements.serializers import StatementSerializer, StatementRetrieveSerializer, PostSerializer, \
-    SpellCheckSerializer
+    GetContentSerializer
+
+from .gpt_tools.gpt_response import get_advice
 
 
 class PostListAPIView(APIView):
@@ -111,4 +115,15 @@ class SpellCheckAPIView(APIView):
         post.save()
         serializer = PostSerializer(post)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class CallGPTAPIView(APIView):
+    def post(self, request):
+        serializer = GetContentSerializer(data=request.data)
+        if serializer.is_valid():
+            res = get_advice(serializer.data['content'], serializer.data['order'])
+            print(res)
+            print(type(res))
+            return Response(json.loads(res))
+        return Response(serializer.errors)
 

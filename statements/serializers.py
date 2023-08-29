@@ -17,7 +17,7 @@ class StatementSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Statement
-        fields = ['title', 'posts']
+        fields = ['id', 'title', 'posts']
 
     def create(self, validated_data):
         posts_data = validated_data.pop('posts')
@@ -33,5 +33,6 @@ class StatementRetrieveSerializer(serializers.ModelSerializer):
         fields = ['title']
 
 
-class SpellCheckSerializer(serializers.Serializer):
-    text = serializers.CharField(max_length=15000)
+class GetContentSerializer(serializers.Serializer):
+    content = serializers.CharField(max_length=15000)
+    order = serializers.CharField(max_length=1500)
