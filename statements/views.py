@@ -118,12 +118,17 @@ class SpellCheckAPIView(APIView):
 
 
 class CallGPTAPIView(APIView):
+    @swagger_auto_schema(tags=["GPT CALL"], request_body=GetContentSerializer, query_serializer=GetContentSerializer,
+                         responses={
+                             200: 'GPT API 호출 성공',
+                             400: '입력값 유효성 검증 실패',
+                         })
     def post(self, request):
         serializer = GetContentSerializer(data=request.data)
         if serializer.is_valid():
             res = get_advice(serializer.data['content'], serializer.data['order'])
             print(res)
             print(type(res))
-            return Response(json.loads(res))
-        return Response(serializer.errors)
+            return Response(json.loads(res), status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
