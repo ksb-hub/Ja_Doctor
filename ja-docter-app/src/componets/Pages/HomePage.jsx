@@ -2,10 +2,17 @@ import React from 'react'
 import styled from 'styled-components'
 import { useNavigate } from 'react-router-dom'
 import Button from '../UI/Button'
-import Chatbot from '../UI/Chatbot'
-import {getPostList, getStatement, getStatementList,
-    updatePost,  updateStatement, 
-    createpost, createStatement, deleteStatement} from '../../APIs/Statemet'
+import HomeRight from './HomeRight';
+import HomeLeft from './HomeLeft'
+import HomeScreen from './HomeScreen'
+import DetailsPage from './DetailsPage';
+import Chatbot from '../UI/Chatbot';
+const Container = styled.div`
+  display: flex;
+
+`;
+
+export default function HomePage() {
 
 
 
@@ -35,19 +42,15 @@ const HomeLeft = styled.div`
     
     return (
         <Container>
-          <HomeRight></HomeRight>
-          <Center>
-            <div>자소서 리스트 렌더링</div>
-            <Button
-              title = {"로그인/ 회원가입 하기"}
-              onClick = {() =>{
-                navigate("/signin")
-            }}
-            >
-            </Button>
+
+            <HomeLeft></HomeLeft>
+            {/* <HomeScreen></HomeScreen> */}
+            <DetailsPage>
+            </DetailsPage>
             <Chatbot></Chatbot>
-          </Center>
-          <HomeLeft></HomeLeft>
+
+            <HomeRight></HomeRight>
+
         </Container>
     )
 }

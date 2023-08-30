@@ -3,8 +3,13 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import Chatbot from './componets/UI/Chatbot';
+import Diffmark from './componets/UI/Diffmark';
+import HomeRight from './componets/Pages/HomeRight';
+import HomeLeft from './componets/Pages/HomeLeft';
+import HomeScreen from './componets/Pages/HomeScreen';
+import DetailsPage from './componets/Pages/DetailsPage';
 
-import DevelpingPage from './componets/Pages/DevelpingPage';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
