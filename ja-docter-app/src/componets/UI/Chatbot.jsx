@@ -1,8 +1,13 @@
-import React, {useState} from "react";
+import React, {useState, useRef, useEffect} from "react";
 import styled from "styled-components"
 import ChatBotSwitch from "../../images/ChatBotSwitch.png";
 import submitButton from "../../images/message-submit.png"
-import postSample from "../../VirtualData/postsample.json"
+import { postGPTCall } from "../../APIs/Swagger";
+import post1 from "../../VirtualData/postsample.json"
+import post2 from "../../VirtualData/post2.json"
+import { ToDoubleslash } from "../../functions/ToDoubleslash";
+import Loading from "./Loading";
+import Diff from "../../functions/Diff";
 const Container = styled.div`
     width: 464px;
     height: 554px;
@@ -97,16 +102,31 @@ const ImageWrapper = styled.div`
 
 
 function Chatbot(){
-    const samplePostMessage = {
-        isSent: true,
-        timeStamp : new Date(),
-        contents: postSample.content
-    }
+
     /**
      * 챗봇 비/ 활성화 관리 State
      */
     const [switchOn, setSwitchOn] = useState(true)
     const [inputMessage, setInputMessage] = useState()
+    const [isLoading, setIsLoading] = useState(false)
+    const startMessage = {
+        isSent: true,
+        timeStamp: new Date(),
+        contents: "안녕하세요 자소서 닥터입니다!!! 어떤것을 도와드릴까요???" 
+    }
+    const [messages, setMessages] = useState([startMessage])
+    const scrollToBottom = (elementRef) => {
+        if (elementRef.current) {
+          elementRef.current.scrollTop = elementRef.current.scrollHeight;
+        }
+      };
+      /** 컴포넌트의 스크롤을 아래로 내려주는함수 */
+    const chatContainerRef = useRef(null);
+    
+    useEffect(() => {
+        scrollToBottom(chatContainerRef);
+    }, [messages]);
+        
     /**
      * 날짜 출력 형식
      */
@@ -120,12 +140,6 @@ function Chatbot(){
      *  content : 메시지 내용 (String)
      * }
      */
-    const startMessage = {
-        isSent: true,
-        timeStamp: new Date(),
-        contents: "안녕하세요 자소서 닥터입니다!!! 어떤것을 도와드릴까요???" 
-    }
-    const [messages, setMessages] = useState([startMessage, samplePostMessage])
 
     /** 
      * 챗봇을 비/활성화 스위치 관리 함수
@@ -143,7 +157,7 @@ function Chatbot(){
      * 채팅 submit 관리 함수 
      * 제출후 messages에 추가해준다.
      */
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (inputMessage !== ""){
             console.log(`${inputMessage} 제출`)
             const newMessage = {
@@ -152,8 +166,32 @@ function Chatbot(){
                 contents: inputMessage,
             }
             setMessages([...messages, newMessage])
-            console.log(`메시지들 출력 ${messages}`)
+            console.log(`메시지들 출력`)
+            setIsLoading(true)
+            const order = "미래계획을 구체적으로 서술해줘"
+            const res = await postGPTCall(
+                ToDoubleslash(post2.content)
+                , inputMessage)
+                console.log(res)
+            console.log(messages)
+            if (res){
+                const returnMessage ={
+                    isSent: true,
+                    timeStamp: new Date(),
+                    contents: res.data.content.modified_text,
+                    preContents: post2.content
+                }
+                setMessages([...messages, newMessage, returnMessage])
+                console.log(messages)
+                setIsLoading(false)
+            }
+            else{
+                setIsLoading(false)
+
+            }
         }
+
+        
     }
     
     
@@ -162,12 +200,14 @@ function Chatbot(){
         <Container>
         {switchOn ? (
             <ChattingWindow>
-                <ChatAllContainer>
+                <ChatAllContainer ref={chatContainerRef}>
                         {
                             messages.map((message, idx) =>{
                                 if (message.isSent) {
-                                    return (
-                                        <ChatContainer
+                                    if (message.preContents){
+                                        /*diff객체를 출력하게 함 */
+                                        return (
+                                            <ChatContainer
                                             style={{
                                                 display: "flex",
                                                 justifyContent: "flex-start",
@@ -176,7 +216,7 @@ function Chatbot(){
 
                                             }}>
                                             <ReceiveChatWrapper key={idx}>
-                                                {message.contents}
+                                                <Diff string1={message.preContents.replace(/\\n/g, '')} string2={message.contents} mode="words"></Diff>
                                             </ReceiveChatWrapper>
                                             <div
                                                 style={{
@@ -185,7 +225,31 @@ function Chatbot(){
                                             >{message.timeStamp.toLocaleDateString('en-US', options)}</div>
 
                                         </ChatContainer>
-                                    );
+                                        )
+                                    }
+                                    else{
+                                        return (
+                                            <ChatContainer
+                                                style={{
+                                                    display: "flex",
+                                                    justifyContent: "flex-start",
+                                                    alignItems: "flex-end",
+                                                    gap: '1px',
+    
+                                                }}>
+                                                <ReceiveChatWrapper key={idx}>
+                                                    {message.contents}
+                                                </ReceiveChatWrapper>
+                                                <div
+                                                    style={{
+                                                        fontSize: '10px',
+                                                    }}
+                                                >{message.timeStamp.toLocaleDateString('en-US', options)}</div>
+    
+                                            </ChatContainer>
+                                        );
+                                    }
+                                    
                                 } else {
                                     return (
                                         <ChatContainer
@@ -209,6 +273,11 @@ function Chatbot(){
                                 }
                                
                         })}
+                    {isLoading && 
+                            <ReceiveChatWrapper>
+                                <Loading></Loading>
+                            </ReceiveChatWrapper>
+                        }
                 </ChatAllContainer>
                 <ChatInput
                     onChange ={handleChange}
