@@ -216,7 +216,7 @@ function Chatbot(){
 
                                             }}>
                                             <ReceiveChatWrapper key={idx}>
-                                                <Diff string1={message.preContents.replace(/\n/g, '')} string2={message.contents} mode="words"></Diff>
+                                                <Diff string1={message.preContents.replace(/\\n/g, '')} string2={message.contents} mode="words"></Diff>
                                             </ReceiveChatWrapper>
                                             <div
                                                 style={{

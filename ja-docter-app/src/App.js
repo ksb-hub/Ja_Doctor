@@ -3,6 +3,7 @@ import './App.css';
 import HomePage from "./componets/Pages/HomePage";
 import LoginPage from "./componets/Pages/LoginPage";
 import { createContext, useState } from "react";
+import DevelpingPage from "./componets/Pages/DevelpingPage";
 
 const AuthContext = createContext();
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Routes>
           <Route index element={<HomePage />}></Route>
           <Route path="/signin" element={<LoginPage />}></Route>
+          <Route path="/developing" element={<DevelpingPage/>}></Route>
           {/* <Route path="/signup" element={<SignupPage />}></Route>
           <Route path="/select1" element={<ItemSelect1 />}></Route>
           <Route path="/myLog" element={<CompareLogPage />}></Route> */}
