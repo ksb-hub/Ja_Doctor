@@ -33,7 +33,7 @@ const ChattingWindow = styled.div`
 const ChatAllContainer = styled.div`
     width: 100%;
     height: 92%;
-    background-color: #fff;
+    background-color: #ffffff;
     border: 1px solid #ccc;
     box-sizing: border-box;
     overflow-y: scroll;
@@ -41,6 +41,18 @@ const ChatAllContainer = styled.div`
     flex-direction: column;
     gap: 3px;
     padding: 9px 0;
+    &::-webkit-scrollbar {
+     width: 10px;
+    }
+
+    &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    }
+
+    &::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+    }
 `;
 /**
  * 채팅박스 한개를 감싸서 왼쪽 or 오른쪽으로 배치후 감싸는 컨테이너
@@ -77,9 +89,11 @@ const ChatInput = styled.textarea`
     display: block;
     background-color: #fff;
     border: 3px solid #ccc;
-    width: 100%;
-    max-width: 100%;
-    min-height: 8%;
+    border-radius: 12px;
+    min-width: 100%;
+    max-height: 9%;
+    padding: 10px 8px;
+    padding-right: 7%;
     font-size: 18px;
     box-sizing: border-box;
     position: absolute;
@@ -98,8 +112,39 @@ const ImageWrapper = styled.div`
         width: 100%;
         height: 100%;
     }
-`
+    &:hover{
+        background-color: #ccc
 
+    }
+`
+const ImageWrapper2 = styled.div`
+    width: 8%;
+    height: 9%;
+    border-radius: 12px;
+    box-sizing: border-box;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    border: 2px solid #000000;
+    background-color: #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    img{
+        display: block;
+        position: absolute;
+        right: 5px;
+        bottom: 12px;
+        width: 24px;
+        height: 24px;
+    }
+
+    &:hover{
+        background-color: #9a9a9a
+
+    }
+`;
 
 function Chatbot(){
 
@@ -174,6 +219,7 @@ function Chatbot(){
                 , inputMessage)
                 console.log(res)
             console.log(messages)
+            setInputMessage("")
             if (res){
                 const returnMessage ={
                     isSent: true,
@@ -274,12 +320,16 @@ function Chatbot(){
                                
                         })}
                     {isLoading && 
-                            <ReceiveChatWrapper>
-                                <Loading></Loading>
-                            </ReceiveChatWrapper>
+                            <ChatContainer>
+                                <ReceiveChatWrapper>
+                                    <Loading></Loading>
+                                </ReceiveChatWrapper>
+
+                            </ChatContainer>
                         }
                 </ChatAllContainer>
                 <ChatInput
+                    value = {inputMessage}
                     onChange ={handleChange}
                     onKeyDown= {(e) =>
                         {
@@ -299,13 +349,20 @@ function Chatbot(){
                         //     handleSubmit()
                         // }}}
                         >
+                    
                 </ChatInput>
+                <ImageWrapper2
+                        onClick={() => {
+                            setInputMessage(''); // 메시지 입력창 비우기
+                            handleSubmit()
+                        }}
+                    >
+                        <img src={submitButton} alt="제출하기 이미지" />
+                </ImageWrapper2>
                 <ImageWrapper onClick={handleSwitch}>
                     <img src={ChatBotSwitch} alt="챗봇 스위치 이미지" />
                 </ImageWrapper>
-                <img 
-                    onClick={handleSubmit}
-                src={submitButton} alt="제출하기 이미지" />
+                
             </ChattingWindow>
         ) : (
             <ImageWrapper onClick={handleSwitch}>
