@@ -4,6 +4,7 @@ import leftimg from "../../images/left.png";
 import rightimg from "../../images/right.png";
 
 const PageContainer = styled.div`
+  width: 33vw;
   padding: 20px;
   position: relative;
 `;

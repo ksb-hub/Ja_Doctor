@@ -1,19 +1,30 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import styled from 'styled-components'
 import Button from '../UI/Button'
+import HomeRight from './HomeRight';
+import HomeLeft from './HomeLeft'
+import HomeScreen from './HomeScreen'
+import DetailsPage from './DetailsPage';
+import Chatbot from '../UI/Chatbot';
+const Container = styled.div`
+  display: flex;
+
+`;
+
 export default function HomePage() {
 
     const navigate = useNavigate();
 
     return (
-        <>
-        <div>임시 HomePage입니다!!!</div>
-        <Button
-            title = '로그인 하러가기'
-            onClick = {() =>{
-                navigate("/signin")
-            }}
-        ></Button>
-        </>
+        <Container>
+            <HomeLeft></HomeLeft>
+            {/* <HomeScreen></HomeScreen> */}
+            <DetailsPage>
+            </DetailsPage>
+            <Chatbot></Chatbot>
+
+            <HomeRight></HomeRight>
+        </Container>
     )
 }

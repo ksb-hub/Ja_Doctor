@@ -3,6 +3,7 @@ import img1 from "../../images/poster.jpg";
 import styled from "styled-components"
 
 const AppWrapper = styled.div`
+  width: 33.3vw;
   text-align: center;
   margin-top: 20px;
   display: flex;

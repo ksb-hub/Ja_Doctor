@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 const AppWrapper = styled.div`
   text-align: center;
+  width: 33.3vw;
   margin-top: 20px;
   display: flex;
   flex-direction: column;
