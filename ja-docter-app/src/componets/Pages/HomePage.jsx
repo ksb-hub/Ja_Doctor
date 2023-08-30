@@ -12,20 +12,6 @@ const Container = styled.div`
   display: flex;
 
 `;
-
-export default function HomePage() {
-
-
-
-const Container = styled.div`
-  border-radius: 4px solid red;
-  width: 100vw;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: flex-start;
-  padding-left: 80px;
-`;
     export default function HomePage() {
 
     const navigate = useNavigate();
