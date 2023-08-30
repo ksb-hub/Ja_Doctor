@@ -5,11 +5,16 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import Chatbot from './componets/UI/Chatbot';
 import Diffmark from './componets/UI/Diffmark';
-import PostWrapper from './componets/statement/PostWrapper';
+import HomeRight from './componets/Pages/HomeRight';
+import HomeLeft from './componets/Pages/HomeLeft';
+import HomeScreen from './componets/Pages/HomeScreen';
+import DetailsPage from './componets/Pages/DetailsPage';
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <Chatbot/>
+    <App/>
+
   </React.StrictMode>
 );
 
