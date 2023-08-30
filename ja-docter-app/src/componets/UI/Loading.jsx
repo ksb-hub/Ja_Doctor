@@ -1,5 +1,5 @@
 import React from "react";
-import { PulseLoader } from "react-spinners";
+import { ScaleLoader } from "react-spinners";
 
 const override = {
   display: "flex",
@@ -11,7 +11,8 @@ const override = {
 const Loading = ({ loading }) => {
   return (
     <div>
-      <PulseLoader
+      <ScaleLoader
+
         
         color="#F0790A"
         loading={loading}

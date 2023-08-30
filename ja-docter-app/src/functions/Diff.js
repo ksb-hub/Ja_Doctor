@@ -24,7 +24,7 @@ const Diff = ({ string1 = "", string2 = "", mode = "characters" }) => {
   if (mode === "sentences")
     groups = diff.diffSentences(string1, string2, { newlineIsToken: true });
 
-  console.log(`mode ${mode} groups`, groups);
+  // console.log(`mode ${mode} groups`, groups);
   const mappedNodes = groups.map((group) => {
     let { value, added, removed } = group;
     if ((added || removed) && !/\S/.test(value)) {

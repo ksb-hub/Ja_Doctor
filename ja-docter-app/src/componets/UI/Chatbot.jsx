@@ -171,7 +171,7 @@ function Chatbot(){
             const order = "미래계획을 구체적으로 서술해줘"
             const res = await postGPTCall(
                 ToDoubleslash(post2.content)
-                , order)
+                , inputMessage)
                 console.log(res)
             console.log(messages)
             if (res){
@@ -216,7 +216,7 @@ function Chatbot(){
 
                                             }}>
                                             <ReceiveChatWrapper key={idx}>
-                                                <Diff string1={message.preContents} string2={message.contents} mode="words"></Diff>
+                                                <Diff string1={message.preContents.replace(/\n/g, '')} string2={message.contents} mode="words"></Diff>
                                             </ReceiveChatWrapper>
                                             <div
                                                 style={{
