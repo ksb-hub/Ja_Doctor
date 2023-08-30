@@ -3,13 +3,12 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import Chatbot from './componets/UI/Chatbot';
-import Diffmark from './componets/UI/Diffmark';
-import PostWrapper from './componets/statement/PostWrapper';
+
+import DevelpingPage from './componets/Pages/DevelpingPage';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <Chatbot/>
+    <App/>
   </React.StrictMode>
 );
 
