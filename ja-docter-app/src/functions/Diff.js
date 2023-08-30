@@ -38,7 +38,7 @@ const Diff = ({ string1 = "", string2 = "", mode = "characters" }) => {
     let nodeStyles;
     if (added) nodeStyles = styles.added;
     if (removed) nodeStyles = styles.removed;
-    return <span style={nodeStyles}>{value.replace(/¶/g, ' ')}</span>;
+    return <span style={nodeStyles}>{value.replace(/¶/g, '')}</span>;
   });
   
   return <span style={{ whiteSpace: "pre-line" }}>{mappedNodes}</span>;

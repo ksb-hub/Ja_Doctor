@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
 import { useNavigate } from 'react-router-dom'
-import styled from 'styled-components'
 import Button from '../UI/Button'
 import HomeRight from './HomeRight';
 import HomeLeft from './HomeLeft'
@@ -20,21 +19,30 @@ export default function HomePage() {
 const Container = styled.div`
   border-radius: 4px solid red;
   width: 100vw;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: flex-start;
-  padding-left: 80px;
+  display: flex;  
+  padding: 20px;
+`;
+
+const HomeRight = styled.div`
+    width: 33.33%;
+    height: 100%;
+
+`;
+
+const Center = styled.div`
+    width: 33.33%;
+`;
+const HomeLeft = styled.div`
+    width: 33.33%;
+    height: 100%;
 `;
     export default function HomePage() {
 
     const navigate = useNavigate();
-    const statementID = 1
-    const title = "testTitle"
-    const postID = 1
-    const versionInfo = "test_version"
+    
     return (
         <Container>
+
             <HomeLeft></HomeLeft>
             {/* <HomeScreen></HomeScreen> */}
             <DetailsPage>
