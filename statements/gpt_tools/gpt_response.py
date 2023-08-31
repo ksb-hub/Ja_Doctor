@@ -36,7 +36,7 @@ def get_key():
 # param v2
 def get_params():
     return {
-        "temperature": 0.6,  # Lower temperature might give more focused output
+        "temperature": 0.2,  # Lower temperature might give more focused output
         "top_p": 0.8,
         "frequency_penalty": 1,
         "presence_penalty": 2,
@@ -44,129 +44,8 @@ def get_params():
     }
 
 
-# def get_schema():
-#     # schema version 1.1
-#     schema = {
-#         "type": "object",
-#         "properties": {
-#             "title": {
-#                 "type": "string",
-#                 "description": "The title of the essay. Must be contained in a line."
-#             },
-#             "content": {
-#                 "type": "object",
-#                 "properties": {
-#                     "modified_text": {
-#                         "type": "string",
-#                         "description": "The Whole Revised Cover Letter."
-#                     },
-#                     "explanation": {
-#                         "type": "string",
-#                         "description": "Description of the modifications. Why did you modify that?"
-#                     },
-#                 },
-#                 "required": [
-#                     "modified_text",
-#                     "explanation"
-#                 ]
-#             }
-#         }
-#     }
-#
-#     return schema
-
-
-# def get_schema():
-#     # schema version 1.2
-#     schema = {
-#         "type": "object",
-#         "properties": {
-#             "content": {
-#                 "type": "object",
-#                 "properties": {
-#                     "edited_text": {
-#                         "type": "string",
-#                         "description": "The revised cover letter with modifications."
-#                     },
-#                     "explanation": {
-#                         "type": "string",
-#                         "description": "Explanation of the modifications made. Why did you modify?"
-#                     }
-#                 },
-#                 "required": [
-#                     "edited_text",
-#                     "explanation"
-#                 ]
-#             }
-#         },
-#         "required": [
-#                 "content"
-#             ]
-#     }
-#
-#     return schema
-
-
-# def get_schema():
-#     # schema version 2.0
-#     schema = {
-#         "type": "object",
-#         "properties": {
-#             "input": {
-#                 "type": "object",
-#                 "properties": {
-#                     "original_text": {
-#                         "type": "string",
-#                         "description": "The original cover letter provided by the user."
-#                     },
-#                     "modification_request": {
-#                         "type": "string",
-#                         "description": "User's request for modifying the cover letter."
-#                     }
-#                 },
-#                 "required": ["original_text", "modification_request"]
-#             },
-#             "output": {
-#                 "type": "object",
-#                 "properties": {
-#                     "modified_text": {
-#                         "type": "string",
-#                         "description": "The revised cover letter with modifications."
-#                     },
-#                     "explanation": {
-#                         "type": "string",
-#                         "description": "Explanation of the modifications made. Why did you modify?"
-#                     },
-#                     "additional_sections": {
-#                         "type": "array",
-#                         "items": {
-#                             "type": "object",
-#                             "properties": {
-#                                 "section_title": {
-#                                     "type": "string",
-#                                     "description": "The title of the additional section."
-#                                 },
-#                                 "section_content": {
-#                                     "type": "string",
-#                                     "description": "The content of the additional section."
-#                                 }
-#                             },
-#                             "required": ["section_title", "section_content"]
-#                         },
-#                         "description": "Additional sections or points that were added to the cover letter."
-#                     }
-#                 },
-#                 "required": ["modified_text", "explanation"]
-#             }
-#         },
-#         "required": ["input", "output"]
-#     }
-#
-#     return schema
-
-
 def get_schema():
-    # schema version 2.1
+    # schema version 2.2
     schema = {
         "type": "object",
         "properties": {
@@ -175,11 +54,11 @@ def get_schema():
                 "properties": {
                     "modified_text": {
                         "type": "string",
-                        "description": "The revised cover letter with modifications."
+                        "description": "The revised cover letter with additional content."
                     },
                     "explanation": {
                         "type": "string",
-                        "description": "Explanation of the modifications made. Why did you modify?"
+                        "description": "Explanation of the additions made. Why did you add new content?"
                     },
                     "additional_sections": {
                         "type": "array",
@@ -188,16 +67,16 @@ def get_schema():
                             "properties": {
                                 "section_title": {
                                     "type": "string",
-                                    "description": "The title of the additional section."
+                                    "description": "The title of the newly added section."
                                 },
                                 "section_content": {
                                     "type": "string",
-                                    "description": "The content of the additional section."
+                                    "description": "The content of the newly added section."
                                 }
                             },
                             "required": ["section_title", "section_content"]
                         },
-                        "description": "Additional sections or points that were added to the cover letter."
+                        "description": "Newly added sections or points to the cover letter."
                     }
                 },
                 "required": ["modified_text", "explanation"]
@@ -207,7 +86,6 @@ def get_schema():
     }
 
     return schema
-
 
 
 # preprocessing v1
@@ -242,15 +120,20 @@ def call_gpt(content, order):
     openai.api_key = get_key()
     parameters = get_params()
     schema = get_schema()
-    response = openai.ChatCompletion.create(
+    len_threshold = len(content) + 150
+    response1 = openai.ChatCompletion.create(
         model="gpt-3.5-turbo-16k",
         messages=[
             {
                 "role": "system",
-                "content": "You are a helpful assistant specialized in expanding and improving cover letters. Focus "
-                           + "on adding new content and details rather than removing existing text from the user's "
-                           + "cover letter. Elaborate on the user's points based on their modification request. Respond "
-                           + "in Korean."
+                "content": "You are a helpful assistant specialized in expanding and improving cover letters."
+                            + "Your primary focus"
+                            + "should be on adding valuable new content and sections, rather than editing or removing "
+                            + "existing parts."
+                            + "Please elaborate and expand upon the user's existing points in accordance with their "
+                            + "modification requests."
+                            + "All your responses should be in Korean."
+
             },
             {
                 "role": "user",
@@ -271,10 +154,35 @@ def call_gpt(content, order):
         },
         **parameters
     )
-    print("여기")
-    res = response["choices"][0]["message"]["function_call"]["arguments"].strip()
-    print(res)
-    return return_edited_essay(json.loads(preprocess_data(res)))
+
+    res1 = return_edited_essay(json.loads(preprocess_data(response1["choices"][0]["message"]["function_call"]["arguments"].strip())))
+    # first_length = len(res1["output"]['modified_text'])
+    # if first_length < len_threshold:
+    #     # 두 번째 요청 (Follow-Up)
+    #     # print(res1["output"]['modified_text'])
+    #     text_dict = {"modified_text": res1["output"]['modified_text']}
+    #     response2 = openai.ChatCompletion.create(
+    #         model="gpt-3.5-turbo-16k",
+    #         messages=[
+    #             {"role": "assistant", "content": f"original_text : {str(text_dict)}\n" + f"modification_request: {order}"},
+    #             {"role": "user", "content": "Can you write more details? Write in korean."}
+    #         ],
+    #         functions=[{
+    #             "name": "return_edited_essay",
+    #             "description": "Returns the full text of the modifications and an explanation of the modifications made.",
+    #             "parameters": schema
+    #         }],
+    #         # Define the function which needs to be called when the output has received
+    #         function_call={
+    #             "name": "return_edited_essay"
+    #         },
+    #         **parameters
+    #     )
+    #     res2 = return_edited_essay(json.loads(preprocess_data(response2["choices"][0]["message"]["function_call"]["arguments"].strip())))
+    #     print("return 2")
+    #     return res2
+    # print("return 1")
+    return res1
 
 
 def get_advice(content, order):
