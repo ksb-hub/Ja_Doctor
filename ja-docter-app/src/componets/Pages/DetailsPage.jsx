@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import leftimg from "../../images/left.png";
 import rightimg from "../../images/right.png";
-
+import { getPostList, getStatement } from '../../APIs/Statemet';
+import Chatbot from '../UI/Chatbot';
+import Diff from '../../functions/Diff';
+import PostEditor from './PostEditor';
 const PageContainer = styled.div`
   width: 33vw;
   padding: 20px;
@@ -23,6 +26,8 @@ const BoxContainer = styled.div`
   border: none;
   padding: 20px;
   margin-top: 20px;
+  max-height: 80vh;
+  overflow-y: auto;
 `;
 
 const BoxTitle = styled.h2`
@@ -100,51 +105,146 @@ const ImageTextContainer = styled.div`
   justify-content: ${props => props.align || 'flex-start'};
   cursor: pointer; 
 `;
-/**
- * 가상데이터
- */
-const DetailsPage = () => {
-  const data = {
-    title: 'test_title',
-    posts: [
-      {
-        content: 'test-contentstest-contentstest-contentstest-contentstest-contentstest-contentsv',
-        versionInfo: '원본'
+
+const ChatBotWrapper = styled.div`
+  position: absolute;
+  right: -600px;
+  bottom: -100px;
+`
+function  DetailsPage() {
+  const [id, setId] = useState()
+  const [statementData, setStatementData] = useState([{
+    version : '',
+    content : ''
+  }])
+  const [focusID, setFocusID] = useState(0)
+  const [postsLength, setPostLength] = useState()
+  const [title, setTitle] = useState('로딩중 입니다..')
+  const [diffMode, setDiffMode] = useState(false)
+  const [editMode , setEditMode] = useState(false)
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const statementId = searchParams.get("id");
+    console.log(`렌더링 해야할 stateId = ${statementId}`);
+    const fetchPostData = async () => {
+      try {
+        const res = await getPostList(statementId);
+        // 처음버전 가져오기
+        const recentPost = res.data[0]
+        console.log(recentPost)
+        setStatementData(res.data)
+        setPostLength(res.data.length)
+      } catch (error) {
+        // 오류 처리
+        console.error('Error fetching data:', error);
       }
-    ]
-  };
+    };
 
-  const handleArrowButtonClick = (direction) => {
-    // 화살표 이미지가 클릭되었을 때 처리할 로직 추가
-    console.log(`${direction} 버전으로 이동`);
-  };
+    const fetchTitleData = async () => {
+      try {
+        const res = await getStatement(statementId);
+        const resData = res.data
+        setTitle(resData)
+        setId(statementId)
+      } catch (error) {
+        // 오류 처리
+        console.error('Error fetching data:', error);
+      }
+    };
 
+    fetchTitleData();
+    fetchPostData(); // 비동기 함수 호출
+
+  }, []);
+  
+  const handleArrowButtonClick = (targetID) => {
+    if (targetID >= 0 && targetID < postsLength){
+      console.log(`${targetID}로 변경`)
+      setFocusID(targetID)
+    }
+  };
   return (
     <PageContainer>
-      <ImageTextContainer onClick={() => handleArrowButtonClick('이전')}>
-        <ArrowImage src={leftimg} alt="Previous" />
-        <ArrowText>이전 버전</ArrowText>
-      </ImageTextContainer>
-      <Smalltext>홈 {'>'} 실시간 무료 첨삭</Smalltext>
-      <BoxContainer>
-        <BoxTitle>{data.title}</BoxTitle>
-        {data.posts.map((post, index) => (
-          <div key={index}>
-            <BoxContent>{post.content}</BoxContent>
-            <p>{post.versionInfo}</p>
-          </div>
-        ))}
-      </BoxContainer>
+      {(editMode === true) ? (
+        <PageContainer>
+          <PostEditor
+            inheritContent = {statementData[focusID].content}
+            inheritTitle = {title.title}
+            isNew = {false}
+            statementID = {id}
+            postID = {statementData[focusID].id}
+          ></PostEditor>
+        </PageContainer>
+      ) : (
+        <PageContainer>
+              <ImageTextContainer 
+                style = {{
+                  position: 'absolute',
+                  bottom: '25%',
+                  left: '-4%',
+                }}
+                onClick={() => handleArrowButtonClick(focusID - 1)}>
+              <ArrowImage src={leftimg} alt="Previous" />
+              <ArrowText>이전 버전</ArrowText>
+              </ImageTextContainer>
+              <ImageTextContainer
+                style = {{
+                  position: 'absolute',
+                  bottom: '25%',
+                  right: '-4%',
+                }}
+                onClick={() => handleArrowButtonClick(focusID +1)}>
+              <ArrowImage src={rightimg} alt="Next" />
+              <ArrowText>다음 버전</ArrowText>
+              </ImageTextContainer>
+              <Smalltext>홈 {'>'} 실시간 무료 첨삭</Smalltext><BoxContainer>
+              
+              <BoxTitle>{title.title}</BoxTitle>
+              <ChatBotWrapper>
+                <Chatbot
+                  post = {statementData[focusID].content}
+                  statementId = {id}
+                ></Chatbot>
+              </ChatBotWrapper>
+              <div>
+                <p>{'version Name :'}</p>
+                <p
+                  style={{
+                    color: '#F0790A',
+                    fontWeight: '700',
+                  }}
+                >{statementData[focusID].version_info}</p>
+                {(diffMode && focusID !== 0) ? (
+                  /* diffMode가 true일 때 렌더링할 JSX */
+                  <Diff string1={statementData[focusID - 1].content} string2={statementData[focusID].content} mode="words"></Diff>
+                ) : (
+                  /* diffMode가 false일 때 렌더링할 JSX */
+                  <BoxContent>{statementData[focusID].content}</BoxContent>
+                )}
+
+              </div>
+
+              </BoxContainer>
+            </PageContainer>
+      )}
+      
       <Divider />
       <ButtonContainer>
-        <Button>편집하기</Button>
+        <Button
+          onClick={() => {
+            setEditMode(!editMode)
+          }}
+        >편집하기</Button>
         <Button>복사하기</Button>
         <Button>맞춤법 검사</Button>
+        <Button
+          onClick={() => {
+            setDiffMode(!diffMode)
+          }}
+        >수정부분 표시</Button>
       </ButtonContainer>
-      <ImageTextContainer onClick={() => handleArrowButtonClick('다음')}>
-        <ArrowImage src={rightimg} alt="Next" />
-        <ArrowText>다음 버전</ArrowText>
-      </ImageTextContainer>
+      
+      
     </PageContainer>
   );
 };

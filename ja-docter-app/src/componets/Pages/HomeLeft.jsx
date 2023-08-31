@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-
+import { useNavigate } from 'react-router-dom';
 const AppWrapper = styled.div`
   text-align: center;
   width: 33.3vw;
@@ -50,12 +50,17 @@ const Link = styled.div`
 `;
 
 function HomeLeft() {
+  const navigate = useNavigate()
   return (
     <AppWrapper>
       <Title>
         <TitleWithButton>
           <div>자소서 닥터</div>
-          <LoginButton>로그인/가입</LoginButton>
+          <LoginButton
+            onClick={() =>{
+              navigate("/signin")
+            }}
+          >로그인/가입</LoginButton>
         </TitleWithButton>
       </Title>
       <Content>

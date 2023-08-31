@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-
+import { getStatementList } from '../../APIs/Statemet';
+import { Navigate, useNavigate } from 'react-router-dom';
 const Container = styled.div`
   width: 100%;
   max-width: 800px;
@@ -87,6 +88,7 @@ const StatementList = styled.div`
  * 자소서 한 개씩의 item
  */
 const StatementItem = styled.div`
+  width: 80%;
   border: 1px solid #ccc;
   padding: 10px;
   margin: 10px 0;
@@ -94,48 +96,66 @@ const StatementItem = styled.div`
   border-radius: 5px;
 `;
 
-function StatementListComponent({ data }) {
-    return (
-      <StatementList>
-        {data.map((item, index) => (
-          <StatementItem key={index}>
-            <h3>{item.title}</h3>
-            <p>{item.content}</p>
-          </StatementItem>
-        ))}
-      </StatementList>
-    );
-  }
 
 function HomeScreen() {
   const [popupVisible, setPopupVisible] = useState(false);
+  const [testList, setTestList] = useState([{
+    title: '로딩중 입니다',
+    posts: [
+      {content: '조금만 기다려주세요...'}
 
-  const statementList = [
-    {
-      title: 'test_title_1',
-      content: 'test_contents_1test_contents_1test_contents_1test_contents_1',
-    },
-    {
-      title: 'test_title_2',
-      content: 'test_contents_2',
-    },
-    {
-        title: 'test_title_3',
-        content: 'test_contents_3test_contents_3test_contents_3',
-    },
-    {
-        title: 'test_title_4',
-        content: 'test_contents_3test_contents_3test_contents_3',
-    },
-    {
-        title: 'test_title_5',
-        content: 'test_contents_3test_contents_3test_contents_3',
-    },
-    {
-        title: 'test_title_6',
-        content: 'test_contents_3test_contents_3test_contents_3',
+    ]
     }
-  ];
+  ])
+  const navigate = useNavigate() 
+  function StatementListComponent({ data }) {
+      console.log(data)
+      return (
+        <StatementList>
+          {data.map((item, index) => (
+            <StatementItem key={index}
+              onClick={()=>{
+                navigate(`/statement?id=${index+1}`)
+              }}
+            >
+              <h3>{item.title}</h3>
+              <p>{truncateString(item.posts[0].content, 20)}</p>
+            </StatementItem>
+          ))}
+        </StatementList>
+      );
+    }
+
+  /** 페이지 첫 랜더링시만 StatementList 가져오기 */
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await getStatementList();
+        console.log(res.data)
+        setTestList(res.data);
+      } catch (error) {
+        // 오류 처리
+        console.error('Error fetching data:', error);
+      }
+    };
+  
+    fetchData(); // 비동기 함수 호출
+  }, []);
+  /**
+   * @return str[0:maxLength] + '...'
+   *  최대 maxLength까지 스트링이 리턴되게
+   * @param {*} str 
+   * @param {*} maxLength 
+   * @returns 
+   */
+  function truncateString(str, maxLength) {
+    console.log(str)
+    if (str.length > maxLength) {
+      return str.substr(0, maxLength) + '...';
+    }
+    return str;
+  }
+
 
   return (
     <Container>
@@ -150,16 +170,16 @@ function HomeScreen() {
       </Header>
       
       <SelectButton onClick={() => setPopupVisible(true)}>자소서 선택 ▿</SelectButton>
-      <StatementListComponent data={statementList} /> {/* StatementList 렌더링 */}
+      <StatementListComponent data={testList} /> {/* StatementList 렌더링 */}
       {popupVisible && (
         <Popup>
           <PopupContent>
             <h2>내 자소서들</h2>
             <StatementList>
-              {statementList.map((item, index) => (
+              {testList.map((item, index) => (
                 <StatementItem key={index}>
                   <h3>{item.title}</h3>
-                  <p>{item.content}</p>
+                  <p>{truncateString(item.posts[0].content, 20)}</p>
                 </StatementItem>
               ))}
             </StatementList>

@@ -14,16 +14,13 @@ const Container = styled.div`
 `;
 export default function HomePage() {
 
-    const navigate = useNavigate();
     
     return (
         <Container>
 
             <HomeLeft></HomeLeft>
-            {/* <HomeScreen></HomeScreen> */}
-            <DetailsPage>
-            </DetailsPage>
-            <Chatbot></Chatbot>
+            <HomeScreen></HomeScreen>
+            {/* <Chatbot></Chatbot> */}
 
             <HomeRight></HomeRight>
 

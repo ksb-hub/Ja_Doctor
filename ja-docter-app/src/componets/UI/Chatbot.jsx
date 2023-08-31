@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from "react";
+import React, {useState, useRef, useEffect, version} from "react";
 import styled from "styled-components"
 import ChatBotSwitch from "../../images/ChatBotSwitch.png";
 import submitButton from "../../images/message-submit.png"
@@ -8,6 +8,7 @@ import post2 from "../../VirtualData/post2.json"
 import { ToDoubleslash } from "../../functions/ToDoubleslash";
 import Loading from "./Loading";
 import Diff from "../../functions/Diff";
+import { createpost } from "../../APIs/Statemet";
 const Container = styled.div`
     width: 464px;
     height: 554px;
@@ -146,8 +147,13 @@ const ImageWrapper2 = styled.div`
     }
 `;
 
-function Chatbot(){
+function Chatbot(props){
 
+    /**
+     * 첨삭 받을 자소서
+     */
+    const targetPost = props.post
+    const statementId = props.statementId
     /**
      * 챗봇 비/ 활성화 관리 State
      */
@@ -202,6 +208,15 @@ function Chatbot(){
      * 채팅 submit 관리 함수 
      * 제출후 messages에 추가해준다.
      */
+
+    /**
+     * 
+     * @param {*} editPost 
+     * @param {*} versionInfo 
+     */
+    const versionCreate = (editPost, versionInfo) => {
+      createpost(statementId, editPost, versionInfo)
+    }
     const handleSubmit = async () => {
         if (inputMessage !== ""){
             console.log(`${inputMessage} 제출`)
@@ -215,7 +230,7 @@ function Chatbot(){
             setIsLoading(true)
             const order = "미래계획을 구체적으로 서술해줘"
             const res = await postGPTCall(
-                ToDoubleslash(post2.content)
+                ToDoubleslash(targetPost)
                 , inputMessage)
                 console.log(res)
             console.log(messages)
@@ -224,8 +239,8 @@ function Chatbot(){
                 const returnMessage ={
                     isSent: true,
                     timeStamp: new Date(),
-                    contents: res.data.content.modified_text,
-                    preContents: post2.content
+                    contents: res.data.output.modified_text,
+                    preContents: targetPost
                 }
                 setMessages([...messages, newMessage, returnMessage])
                 console.log(messages)
@@ -269,7 +284,33 @@ function Chatbot(){
                                                     fontSize: '10px',
                                                 }}
                                             >{message.timeStamp.toLocaleDateString('en-US', options)}</div>
-
+                                            <div>
+                                              <button
+                                                style={{
+                                                  border: '2px solid',
+                                                  backgroundColor: '#F0790A',
+                                                  color: 'white', // 텍스트 색상
+                                                  padding: '8px 16px', // 여백
+                                                  borderRadius: '4px', // 모서리 둥글기
+                                                  cursor: 'pointer', // 포인터 커서
+                                                  fontSize: '14px', // 글꼴 크기
+                                                  fontWeight: 'bold', // 글꼴 굵기
+                                                }}
+                                                onMouseOver={(e) => {
+                                                  e.target.style.backgroundColor = '#C05200'; // hover 시 배경색 변경
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                  e.target.style.backgroundColor = '#F0790A'; // hover 빠져나올 때 원래 배경색으로 변경
+                                                }}
+                                                onClick={() => {
+                                                  console.log('수정본 추가 내용!!!');
+                                                  console.log(message.contents);
+                                                  versionCreate(message.contents, "editVersion!!")
+                                                }}
+                                              >
+                                                적용하기
+                                              </button>
+                                            </div>
                                         </ChatContainer>
                                         )
                                     }
