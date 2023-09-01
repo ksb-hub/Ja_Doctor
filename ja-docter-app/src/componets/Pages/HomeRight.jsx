@@ -4,11 +4,12 @@ import styled from "styled-components"
 
 const AppWrapper = styled.div`
   width: 33.3vw;
+  height: 100vh;
+  box-sizing: border-box;
   text-align: center;
-  margin-top: 20px;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
 `;
 
 const ContentWrapper = styled.div`
@@ -49,7 +50,6 @@ const AdviceText = styled.p`
 `;
 
 const AccountName = styled.p`
-  margin-top: 10px;
   font-size: 20px;
   font-weight: 600;
   color: black;
@@ -62,6 +62,7 @@ function HomeRight() {
     try {
       const response = await fetch('https://api.adviceslip.com/advice');
       const data = await response.json();
+      console.log(data)
       setAdvice(data.slip.advice);
     } catch (error) {
       console.error("Error fetching advice:", error);
