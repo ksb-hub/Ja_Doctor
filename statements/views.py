@@ -1,24 +1,25 @@
-import asyncio
-import json
-
 from django.shortcuts import get_object_or_404
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 from statements.models import Post, Statement
 from statements.py_hanspell import return_text500, spell_checker
 from statements.serializers import StatementSerializer, StatementRetrieveSerializer, PostSerializer, \
     GetContentSerializer
 
+from django.db.models import Max
+
 from .gpt_tools.gpt_response import get_advice
 
 
 class PostListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     @swagger_auto_schema(tags=["post_"])
     def get(self, request, statement_id):
-        statement = Statement.objects.get(id=statement_id)
+        statement = Statement.objects.get(statement_order=statement_id)
         posts = statement.posts.all()
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -29,20 +30,32 @@ class PostListAPIView(APIView):
                              400: '입력값 유효성 검증 실패',
                          })
     def post(self, request, statement_id):
+        statement = get_object_or_404(Statement, statement_order=statement_id)
+        # Find the highest post_order in the current Statement
+        max_order = statement.posts.aggregate(Max('post_order'))['post_order__max'] or 0
+        # Increment by 1
+        new_order = max_order + 1
+
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(statement_id=statement_id)
+            serializer.save(statement=statement, post_order=new_order)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PostRetrieveAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, statement_id, post_id):
+        post = get_object_or_404(Post, post_order=post_id, statement__statement_order=statement_id)
+        serializer = PostSerializer(post)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     @swagger_auto_schema(tags=["post_detail"], request_body=PostSerializer, query_serializer=PostSerializer,
                          responses={
                              202: 'post 객체 수정 완료',
                              400: '입력값 유효성 검증 실패',
                          })
     def put(self, request, statement_id, post_id):
-        post = get_object_or_404(Post, id=post_id)
+        post = get_object_or_404(Post, post_order=post_id, statement__statement_order=statement_id)
         serializer = PostSerializer(post, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -51,6 +64,7 @@ class PostRetrieveAPIView(APIView):
 
 
 class StatementListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     @swagger_auto_schema(tags=["statement_"])
     def get(self, request):
         statements = Statement.objects.all()
@@ -63,17 +77,24 @@ class StatementListAPIView(APIView):
                              400: '입력값 유효성 검증 실패',
                          })
     def post(self, request):
-        serializer = StatementSerializer(data=request.data)
+        statement = Statement.objects.all()
+        # Find the highest post_order in the current Statement
+        max_order = statement.aggregate(Max('statement_order'))['statement_order__max'] or 0
+        # Increment by 1
+        new_order = max_order + 1
+
+        serializer = StatementSerializer(data=request.data, context={"request": request})
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(statement_order=new_order)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class StatementRetrieveAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     @swagger_auto_schema(tags=["statement_detail"])
     def get(self, request, statement_id):
-        statement = get_object_or_404(Statement, id=statement_id)
+        statement = get_object_or_404(Statement, statement_order=statement_id)
         serializer = StatementRetrieveSerializer(statement)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -84,7 +105,7 @@ class StatementRetrieveAPIView(APIView):
                              400: '입력값 유효성 검증 실패',
                          })
     def put(self, request, statement_id):
-        statement = get_object_or_404(Statement, id=statement_id)
+        statement = get_object_or_404(Statement, statement_order=statement_id)
         serializer = StatementRetrieveSerializer(statement, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -97,15 +118,16 @@ class StatementRetrieveAPIView(APIView):
                              204: 'statement 객체 삭제 완료',
                          })
     def delete(self, request, statement_id):
-        statement = get_object_or_404(Statement, id=statement_id)
+        statement = get_object_or_404(Statement, statement_order=statement_id)
         statement.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class SpellCheckAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     @swagger_auto_schema(tags=["post_detail"])
     def get(self, request, statement_id, post_id):
-        post = get_object_or_404(Post, id=post_id)
+        post = get_object_or_404(Post, post_order=post_id, statement__statement_order=statement_id)
         checked_text = ''
         text_chunk_list = return_text500.operator(post.content)
         for text_chunk in text_chunk_list:
@@ -119,6 +141,7 @@ class SpellCheckAPIView(APIView):
 
 
 class CallGPTAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     @swagger_auto_schema(tags=["GPT CALL"], request_body=GetContentSerializer, query_serializer=GetContentSerializer,
                          responses={
                              200: 'GPT API 호출 성공',
