@@ -1,16 +1,18 @@
 import React from 'react'
 import styled from 'styled-components'
-import { useNavigate } from 'react-router-dom'
-import Button from '../UI/Button'
 import HomeRight from './HomeRight';
 import HomeLeft from './HomeLeft'
 import HomeScreen from './HomeScreen'
-import DetailsPage from './DetailsPage';
-import Chatbot from '../UI/Chatbot';
 
 const Container = styled.div`
   display: flex;
-
+  height: 100vh;
+  box-sizing: border-box;
+  padding-top: 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
 `;
 export default function HomePage() {
 
@@ -20,8 +22,6 @@ export default function HomePage() {
 
             <HomeLeft></HomeLeft>
             <HomeScreen></HomeScreen>
-            {/* <Chatbot></Chatbot> */}
-
             <HomeRight></HomeRight>
 
         </Container>

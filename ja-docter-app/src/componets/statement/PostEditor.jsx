@@ -3,21 +3,20 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { createStatement, getStatementList, updatePost, updateStatement } from '../../APIs/Statemet';
 const StyledPostEditor = styled.div`
-  max-width: 600px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 20px;
   border: 1px solid #ccc;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   background-color: #fff;
-  height: 80vh;
-
+  height: 94%;
   h2 {
     font-size: 1.5rem;
     margin-bottom: 15px;
   }
 
   textarea {
-      width: 90%;
+      width: 95%;
       padding: 15px;
       border: 1px solid #ccc;
       border-radius: 8px;
@@ -107,7 +106,7 @@ const PostEditor = (props) => {
 
       </textarea>
       <textarea
-        rows="14"
+        rows="18"
         placeholder="Write your post..."
         value={content}
         onChange={handleContentChange}
@@ -116,15 +115,12 @@ const PostEditor = (props) => {
         {content.length} / 2000
       </div>
       <button 
-        onClick={() => {
-          handleSubmit(isNew, statementID, postID)
-        }}
-        >
-        편집하기</button>
-        <button 
-        onClick={getList}
-        >
-        Get</button>
+      onClick={() => {
+        handleSubmit(isNew, statementID, postID);
+      }}
+      >
+        {isNew ? '등록하기' : '편집하기'}
+      </button>
     </StyledPostEditor>
   );
 };

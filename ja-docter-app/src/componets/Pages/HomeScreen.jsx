@@ -5,10 +5,11 @@ import { Navigate, useNavigate } from 'react-router-dom';
 const Container = styled.div`
   width: 100%;
   max-width: 800px;
+  max-height: 99vh;
+  box-sizing: border-box;
   margin: 0 auto;
-  padding: 20px;
   text-align: center;
-  background-color: #f5f5f5;
+  background-color: #ffffff;
   
 `;
 
@@ -54,6 +55,7 @@ const SelectButton = styled.button`
  * '자소서 선택' 버튼 눌렀을 때의 팝업 창
  */
 const Popup = styled.div`
+  z-index: 10;
   position: fixed;
   top: 0;
   left: 0;
@@ -69,31 +71,55 @@ const Popup = styled.div`
  */
 const PopupContent = styled.div`
   background-color: white;
+  width: 70%;
   padding: 20px;
   border-radius: 10px;
-  max-height: 80vh; 
+  max-height: 88vh; 
   overflow-y: auto; 
 `;
 /**
  * 자소서 데이터를 목록 형태로 표시
  */
 const StatementList = styled.div`
+  max-height : 70vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 20px;
-  
+  justify-content: flex-start;
+  margin: 20px 0;
+  overflow-y: auto;
+  &::-webkit-scrollbar {
+     width: 10px;
+    }
+
+    &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    }
+
+    &::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+    }
 `;
 /**
  * 자소서 한 개씩의 item
  */
 const StatementItem = styled.div`
-  width: 80%;
+  width: 95%;
   border: 1px solid #ccc;
-  padding: 10px;
+  padding:0 10px;
   margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   background-color: white;
   border-radius: 5px;
+  transition: .6s;
+
+  &:hover{
+    background-color: #ccc;
+    cursor: pointer;
+  }
 `;
 
 
@@ -115,11 +141,11 @@ function HomeScreen() {
           {data.map((item, index) => (
             <StatementItem key={index}
               onClick={()=>{
-                navigate(`/statement?id=${index+1}`)
+                navigate(`/statement?id=${item.id}`)
               }}
             >
-              <h3>{item.title}</h3>
-              <p>{truncateString(item.posts[0].content, 20)}</p>
+              <h3>제목 : {item.title}</h3>
+              <p>{truncateString(item.posts[0].content, 45)}</p>
             </StatementItem>
           ))}
         </StatementList>
@@ -131,7 +157,6 @@ function HomeScreen() {
     const fetchData = async () => {
       try {
         const res = await getStatementList();
-        console.log(res.data)
         setTestList(res.data);
       } catch (error) {
         // 오류 처리
@@ -149,7 +174,6 @@ function HomeScreen() {
    * @returns 
    */
   function truncateString(str, maxLength) {
-    console.log(str)
     if (str.length > maxLength) {
       return str.substr(0, maxLength) + '...';
     }
@@ -177,9 +201,24 @@ function HomeScreen() {
             <h2>내 자소서들</h2>
             <StatementList>
               {testList.map((item, index) => (
-                <StatementItem key={index}>
-                  <h3>{item.title}</h3>
-                  <p>{truncateString(item.posts[0].content, 20)}</p>
+                <StatementItem 
+                  key={index}
+                  onClick={()=>{
+                    navigate(`/statement?id=${item.id}`)
+                }}
+                >
+                  <h3
+                    styled ={{
+                      padding: '0',
+                      margin : '0',
+                    }}
+                  >{item.title}</h3>
+                  <p
+                    styled ={{
+                      padding: '0',
+                      margin : '0',
+                    }}
+                  >{truncateString(item.posts[0].content, 20)}</p>
                 </StatementItem>
               ))}
             </StatementList>

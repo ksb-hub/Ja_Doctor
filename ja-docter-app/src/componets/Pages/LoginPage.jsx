@@ -9,17 +9,22 @@ import HomeRight from './HomeRight';
  * 로그인 정상 동작을 확인하기위한 임시 컨테이너
  */
 const Container = styled.div`
-    width: 100vw;
+    display: flex;
+    padding: 8px;
     height: 100vh;
     box-sizing: border-box;
-    display: flex;
-    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
 `;
 
 const Center = styled.div`
     width: 33.33%;
     height: 100%;
+    
     padding-top: 100px;
+    box-sizing: border-box;
 `
 /**
  * 

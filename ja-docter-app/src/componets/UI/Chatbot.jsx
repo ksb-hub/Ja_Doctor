@@ -154,10 +154,11 @@ function Chatbot(props){
      */
     const targetPost = props.post
     const statementId = props.statementId
+    const newVersion = props.newVersion
     /**
      * 챗봇 비/ 활성화 관리 State
      */
-    const [switchOn, setSwitchOn] = useState(true)
+    const [switchOn, setSwitchOn] = useState(false)
     const [inputMessage, setInputMessage] = useState()
     const [isLoading, setIsLoading] = useState(false)
     const startMessage = {
@@ -218,7 +219,10 @@ function Chatbot(props){
       createpost(statementId, editPost, versionInfo)
     }
     const handleSubmit = async () => {
-        if (inputMessage !== ""){
+        if (newVersion === false){
+            alert('최신버전만 첨삭이 가능합니다!!')
+        }
+        else if (inputMessage !== ""){
             console.log(`${inputMessage} 제출`)
             const newMessage = {
                 isSent: false,
@@ -232,19 +236,35 @@ function Chatbot(props){
             const res = await postGPTCall(
                 ToDoubleslash(targetPost)
                 , inputMessage)
+                console.log('여기!!!')
                 console.log(res)
             console.log(messages)
             setInputMessage("")
             if (res){
-                const returnMessage ={
-                    isSent: true,
-                    timeStamp: new Date(),
-                    contents: res.data.output.modified_text,
-                    preContents: targetPost
+                if (res.data.output.explanation === ""){
+                    const returnMessage ={
+                        isSent: true,
+                        timeStamp: new Date(),
+                        contents: "AI가 요청을 이해하지 못했습니다 죄송합니다.",
+                        preContents: "AI가 요청을 이해하지 못했습니다 죄송합니다.",
+                        iserror : true,
+                    }
+                    setMessages([...messages, newMessage, returnMessage])
+                    console.log(messages)
+                    setIsLoading(false)
                 }
-                setMessages([...messages, newMessage, returnMessage])
-                console.log(messages)
-                setIsLoading(false)
+                else{
+                    // explanation === ""일 때 
+                    const returnMessage ={
+                        isSent: true,
+                        timeStamp: new Date(),
+                        contents: res.data.output.renewal_text,
+                        preContents: targetPost
+                    }
+                    setMessages([...messages, newMessage, returnMessage])
+                    console.log(messages)
+                    setIsLoading(false)
+                }
             }
             else{
                 setIsLoading(false)
@@ -258,7 +278,11 @@ function Chatbot(props){
     
     
     return (
-        <Container>
+        <Container
+        style={{
+            zIndex: switchOn ? '2' : '0'
+          }}
+        >
         {switchOn ? (
             <ChattingWindow>
                 <ChatAllContainer ref={chatContainerRef}>
@@ -284,33 +308,37 @@ function Chatbot(props){
                                                     fontSize: '10px',
                                                 }}
                                             >{message.timeStamp.toLocaleDateString('en-US', options)}</div>
-                                            <div>
-                                              <button
-                                                style={{
-                                                  border: '2px solid',
-                                                  backgroundColor: '#F0790A',
-                                                  color: 'white', // 텍스트 색상
-                                                  padding: '8px 16px', // 여백
-                                                  borderRadius: '4px', // 모서리 둥글기
-                                                  cursor: 'pointer', // 포인터 커서
-                                                  fontSize: '14px', // 글꼴 크기
-                                                  fontWeight: 'bold', // 글꼴 굵기
-                                                }}
-                                                onMouseOver={(e) => {
-                                                  e.target.style.backgroundColor = '#C05200'; // hover 시 배경색 변경
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                  e.target.style.backgroundColor = '#F0790A'; // hover 빠져나올 때 원래 배경색으로 변경
-                                                }}
-                                                onClick={() => {
-                                                  console.log('수정본 추가 내용!!!');
-                                                  console.log(message.contents);
-                                                  versionCreate(message.contents, "editVersion!!")
-                                                }}
-                                              >
-                                                적용하기
-                                              </button>
-                                            </div>
+                                            {message.iserror !== true &&(
+                                                <div>
+                                                <button
+                                                  style={{
+                                                    border: '2px solid',
+                                                    backgroundColor: '#F0790A',
+                                                    color: 'white', // 텍스트 색상
+                                                    padding: '8px 16px', // 여백
+                                                    borderRadius: '4px', // 모서리 둥글기
+                                                    cursor: 'pointer', // 포인터 커서
+                                                    fontSize: '14px', // 글꼴 크기
+                                                    fontWeight: 'bold', // 글꼴 굵기
+                                                  }}
+                                                  onMouseOver={(e) => {
+                                                    e.target.style.backgroundColor = '#C05200'; // hover 시 배경색 변경
+                                                  }}
+                                                  onMouseLeave={(e) => {
+                                                    e.target.style.backgroundColor = '#F0790A'; // hover 빠져나올 때 원래 배경색으로 변경
+                                                  }}
+                                                  onClick={() => {
+                                                    console.log('수정본 추가 내용!!!');
+                                                    console.log(message.contents);
+                                                    versionCreate(message.contents, "editVersion!!")
+                                                  }}
+                                                >
+                                                  적용하기
+                                                </button>
+                                              </div>
+                                            )}
+                                            
+                                            
                                         </ChatContainer>
                                         )
                                     }
@@ -370,6 +398,7 @@ function Chatbot(props){
                         }
                 </ChatAllContainer>
                 <ChatInput
+                    placeholder= {"요청사항을 입력해주세요..."}
                     value = {inputMessage}
                     onChange ={handleChange}
                     onKeyDown= {(e) =>

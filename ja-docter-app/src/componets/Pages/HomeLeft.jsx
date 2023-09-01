@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom';
 const AppWrapper = styled.div`
   text-align: center;
   width: 33.3vw;
-  margin-top: 20px;
+  height: 100vh;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  z-index: 1;
 `;
 
 const Title = styled.div`
@@ -35,6 +37,7 @@ const LoginButton = styled.button`
 `;
 
 const Content = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -43,10 +46,18 @@ const Content = styled.div`
 `;
 
 const Link = styled.div`
+  width: 80%;
   margin: 10px 0;
+  padding: 6px 9px;
+  text-align: start;
   font-size: 18px;
+  border-radius: 4px;
   color: black;
   cursor: pointer;
+
+  &:hover{
+    background-color: #ccc;
+  }
 `;
 
 function HomeLeft() {
@@ -54,8 +65,18 @@ function HomeLeft() {
   return (
     <AppWrapper>
       <Title>
-        <TitleWithButton>
-          <div>자소서 닥터</div>
+        <TitleWithButton
+        >
+          <div
+            style = {{
+              cursor: 'pointer',
+            }}
+            onClick = {
+              ()=>{
+                navigate('/')
+              }
+            }
+          >자소서 닥터</div>
           <LoginButton
             onClick={() =>{
               navigate("/signin")
@@ -64,9 +85,28 @@ function HomeLeft() {
         </TitleWithButton>
       </Title>
       <Content>
-        <Link>전문가 상담받기</Link>
-        <Link>비슷한 자소서 열람하기</Link>
-        <Link>멤버쉽 결제하기</Link>
+        <Link
+          onClick={() =>{
+            navigate("/WriteStatement")
+          }}
+        >새 자소서 만들기</Link>
+        <Link
+          onClick={() =>{
+            navigate("/developing")
+          }}
+          
+          >전문가 상담받기</Link>
+        <Link
+
+        onClick={() =>{
+          navigate("/developing")
+        }}
+>비슷한 자소서 열람하기</Link>
+        <Link
+          onClick={() =>{
+            navigate("/developing")
+          }}
+        >멤버쉽 결제하기</Link>
       </Content>
     </AppWrapper>
   );
