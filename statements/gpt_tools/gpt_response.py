@@ -1,202 +1,3 @@
-# import json
-# import os
-# from pathlib import Path
-#
-# import openai
-# from django.core.exceptions import ImproperlyConfigured
-#
-#
-# def get_key_from_file():
-#     BASE_DIR = Path(__file__).resolve().parent.parent.parent
-#     secret_file = os.path.join(BASE_DIR, 'openai_key.json')
-#     with open(secret_file) as f:
-#         secrets = json.load(f)
-#
-#     return secrets.get("KEY", None)
-#
-#
-# def get_key():
-#     key = get_key_from_file()
-#     if key is None:
-#         raise ImproperlyConfigured("API 키를 설정하세요.")
-#     return key
-#
-# # # param v1
-# # def get_param():
-# #     parameters = {
-# #         "temperature": 1,
-# #         "top_p": 0.7,
-# #         "frequency_penalty": 1,
-# #         "presence_penalty": 2,
-# #         "max_tokens": 13000,
-# #     }
-# #
-# #     return parameters
-#
-# # param v2
-# def get_params():
-#     return {
-#         "temperature": 0.2,  # Lower temperature might give more focused output
-#         "top_p": 0.8,
-#         "frequency_penalty": 1,
-#         "presence_penalty": 2,
-#         "max_tokens": 7000,  # Lower max tokens if you want shorter output
-#     }
-#
-#
-# def get_schema():
-#     # schema version 2.2
-#     schema = {
-#         "type": "object",
-#         "properties": {
-#             "output": {
-#                 "type": "object",
-#                 "properties": {
-#                     "modified_text": {
-#                         "type": "string",
-#                         "description": "The revised cover letter with additional content."
-#                     },
-#                     "explanation": {
-#                         "type": "string",
-#                         "description": "Explanation of the additions made. Why did you add new content?"
-#                     },
-#                     "additional_sections": {
-#                         "type": "array",
-#                         "items": {
-#                             "type": "object",
-#                             "properties": {
-#                                 "section_title": {
-#                                     "type": "string",
-#                                     "description": "The title of the newly added section."
-#                                 },
-#                                 "section_content": {
-#                                     "type": "string",
-#                                     "description": "The content of the newly added section."
-#                                 }
-#                             },
-#                             "required": ["section_title", "section_content"]
-#                         },
-#                         "description": "Newly added sections or points to the cover letter."
-#                     }
-#                 },
-#                 "required": ["modified_text", "explanation"]
-#             }
-#         },
-#         "required": ["output"]
-#     }
-#
-#     return schema
-#
-#
-# # preprocessing v1
-# def preprocess_data(data):
-#     cleared_data = data.replace(',\n  }', '\n  }')
-#     cleared_data = cleared_data.replace('\\ n \\', '\\n')
-#     cleared_data = cleared_data.replace('\\ n', '\\n')
-#     cleared_data = cleared_data.replace('\\N', '\\n')
-#     cleared_data = cleared_data.replace('\\n\\\n', '\\n\\n')
-#
-#     error_count_open = cleared_data.count('{')
-#     error_count_close = cleared_data.count('}')
-#     if error_count_close != error_count_open:
-#         cleared_data += '"'+'}' * (error_count_open-error_count_close)
-#
-#     return cleared_data
-#
-#
-# # A function for gpt learning direction
-# def return_edited_essay(res):
-#     return {
-#         "output": {
-#             "modified_text": res.get("output", {}).get("modified_text", ""),
-#             "explanation": res.get("output", {}).get("explanation", ""),
-#             "additional_sections": res.get("output", {}).get("additional_sections", [])
-#         }
-#     }
-#
-#
-# def call_gpt(content, order):
-#     print(type(content), type(order))
-#     openai.api_key = get_key()
-#     parameters = get_params()
-#     schema = get_schema()
-#     len_threshold = len(content) + 150
-#     response1 = openai.ChatCompletion.create(
-#         model="gpt-3.5-turbo-16k",
-#         messages=[
-#             {
-#                 "role": "system",
-#                 "content": "You are a helpful assistant specialized in expanding and improving cover letters."
-#                             + "Your primary focus"
-#                             + "should be on adding valuable new content and sections, rather than editing or removing "
-#                             + "existing parts."
-#                             + "Please elaborate and expand upon the user's existing points in accordance with their "
-#                             + "modification requests."
-#                             + "All your responses should be in Korean."
-#
-#             },
-#             {
-#                 "role": "user",
-#                 "content": f"original_text : {content}\n"
-#                            + f"modification_request: {order}"
-#             },
-#         ],
-#
-#         # Implement a function call with JSON output schema
-#         functions=[{
-#             "name": "return_edited_essay",
-#             "description": "Returns the full text of the modifications and an explanation of the modifications made.",
-#             "parameters": schema
-#         }],
-#         # Define the function which needs to be called when the output has received
-#         function_call={
-#             "name": "return_edited_essay"
-#         },
-#         **parameters
-#     )
-#
-#     res1 = return_edited_essay(json.loads(preprocess_data(response1["choices"][0]["message"]["function_call"]["arguments"].strip())))
-#     # first_length = len(res1["output"]['modified_text'])
-#     # if first_length < len_threshold:
-#     #     # 두 번째 요청 (Follow-Up)
-#     #     # print(res1["output"]['modified_text'])
-#     #     text_dict = {"modified_text": res1["output"]['modified_text']}
-#     #     response2 = openai.ChatCompletion.create(
-#     #         model="gpt-3.5-turbo-16k",
-#     #         messages=[
-#     #             {"role": "assistant", "content": f"original_text : {str(text_dict)}\n" + f"modification_request: {order}"},
-#     #             {"role": "user", "content": "Can you write more details? Write in korean."}
-#     #         ],
-#     #         functions=[{
-#     #             "name": "return_edited_essay",
-#     #             "description": "Returns the full text of the modifications and an explanation of the modifications made.",
-#     #             "parameters": schema
-#     #         }],
-#     #         # Define the function which needs to be called when the output has received
-#     #         function_call={
-#     #             "name": "return_edited_essay"
-#     #         },
-#     #         **parameters
-#     #     )
-#     #     res2 = return_edited_essay(json.loads(preprocess_data(response2["choices"][0]["message"]["function_call"]["arguments"].strip())))
-#     #     print("return 2")
-#     #     return res2
-#     # print("return 1")
-#     return res1
-#
-#
-# def get_advice(content, order):
-#     print(type(content), type(order))
-#     advice = call_gpt(content, order)
-#     # return {
-#     #     "content": {
-#     #         "modified_text": advice.get("main_text", ""),
-#     #         "explanation": advice.get("explanation", "")
-#     #     }
-#     # }
-#     return advice
-
-
 import json
 import os
 from pathlib import Path
@@ -220,13 +21,24 @@ def get_key(file_path='openai_key.json'):
 
 
 def get_params():
+    # params v1.1
     return {
-        "temperature": 0.2,
+        "temperature": 0.6,
         "top_p": 0.8,
         "frequency_penalty": 1,
         "presence_penalty": 2,
-        "max_tokens": 7000,
+        "max_tokens": 13000,
     }
+
+# def get_params():
+#     # params v1.2
+#     return {
+#         "temperature": 0.7,  # 응답의 다양성을 높이기 위해 약간 높임
+#         "top_p": 0.85,       # 다양한 단어와 구문을 쓰게 하기 위해 약간 높임
+#         "frequency_penalty": 0.5,  # 흔하지 않은 단어나 표현도 사용하도록 함
+#         "presence_penalty": 2,  # 모델이 더 많은 내용을 추가하도록 함
+#         "max_tokens": 13000,  # 가능한 한 많은 내용을 포함하기 위해 그대로 둠
+#     }
 
 
 # preprocessing v1
@@ -247,20 +59,42 @@ def preprocess_data(data):
 
 def construct_prompt(content, order):
     return [
+        #  #prompt ver 1.1
+        # {
+        #     "role": "system",
+        #     "content": "당신은 제공된 요청사항에 따라 원문에 새로운 새용을 추가해 주는 전문가입니다.\n" +
+        #                "모든 응답은 한국어로 해 주세요.\n" +
+        #                "원문에 비해 확연히 달라진 내용을 반환해야 합니다.\n" +
+        #                "원문의 내용 요약이나 삭제는 최소화해야 합니다.\n\n"
+        # },
+        #  #prompt ver 1.2
+        # {
+        #     "role": "system",
+        #     "content": "당신은 제공된 요청사항에 따라 원문에 새로운 내용을 풍성하게 추가해 주는 전문가입니다.\n" +
+        #                "모든 응답은 한국어로 해 주세요.\n" +
+        #                "원문에 존재하는 내용은 최대한 그대로 유지하면서, 새로운 섹션, 예시, 설명 등을 상세하게 추가해 주세요.\n" +
+        #                "기존 내용의 요약이나 삭제는 피하고, 새로운 정보나 통찰을 중점적으로 추가해야 합니다.\n" +
+        #                "해당 지시를 따르지 않을 경우, 작업이 실패한 것으로 간주됩니다.\n\n"
+        # },
+        # prompt ver 1.3
         {
             "role": "system",
-            "content": "You are a helpful assistant specialized in expanding and improving cover letters."
-                       + "Your primary focus"
-                       + "should be on adding valuable new content and sections, rather than editing or removing "
-                       + "existing parts."
-                       + "Please elaborate and expand upon the user's existing points in accordance with their "
-                       + "modification requests."
-                       + "All your responses should be in Korean."
+            "content": "당신은 원문에 존재하는 내용을 보완하고, 다양한 새로운 요소와 내용을 추가하는 전문가입니다.\n" +
+                       "반드시 모든 응답은 한국어로 해 주세요.\n" +
+                       "원문의 기존 내용은 보존하고, 요청사항에 맞게 아래와 같은 방법으로 내용을 추가해 주세요:\n" +
+                       "- 기존의 섹션은 되도록 삭제하지 않음\n" +
+                       "- 원문의 내용보다 훨씬 길게 작성\n" +
+                       "- 새로운 섹션 추가\n" +
+                       "- 관련된 예시나 사례 제공\n" +
+                       "- 통계나 데이터를 활용한 설명\n" +
+                       "- 인용문 또는 참고 문헌 추가\n" +
+                       "작업이 이러한 지침에 부합하지 않으면, 작업이 실패한 것으로 간주됩니다.\n\n"
         },
         {
             "role": "user",
-            "content": f"original_text : {content}\n"
-                       + f"modification_request: {order}"
+            "content": f"원문 : {content}\n\n\n"
+                       + f"요청사항: {order}\n\n"
+                       + "보강된 내용: "
         },
     ]
 
@@ -268,9 +102,9 @@ def construct_prompt(content, order):
 def return_edited_essay(res):
     return {
         "output": {
-            "modified_text": res.get("output", {}).get("modified_text", ""),
+            "renewal_text": res.get("output", {}).get("renewal_text", ""),
             "explanation": res.get("output", {}).get("explanation", ""),
-            "additional_sections": res.get("output", {}).get("additional_sections", [])
+            "modification_success": res.get("output", {}).get("modification_success", False),
         }
     }
 
@@ -299,41 +133,27 @@ def extract_and_preprocess_response(response):
 
 
 def get_schema():
-    # schema version 2.2
+    # schema version 2.3
     schema = {
         "type": "object",
         "properties": {
             "output": {
                 "type": "object",
                 "properties": {
-                    "modified_text": {
+                    "renewal_text": {
                         "type": "string",
-                        "description": "The revised cover letter with additional content."
+                        "description": "Renewal self-introduce statement. It must contain the added content."
                     },
                     "explanation": {
                         "type": "string",
                         "description": "Explanation of the additions made. Why did you add new content?"
                     },
-                    "additional_sections": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "section_title": {
-                                    "type": "string",
-                                    "description": "The title of the newly added section."
-                                },
-                                "section_content": {
-                                    "type": "string",
-                                    "description": "The content of the newly added section."
-                                }
-                            },
-                            "required": ["section_title", "section_content"]
-                        },
-                        "description": "Newly added sections or points to the cover letter."
+                    "modification_success": {
+                        "type": "boolean",
+                        "description": "Whether the modification request has been implemented successfully"
                     }
                 },
-                "required": ["modified_text", "explanation"]
+                "required": ["renewal_text", "explanation", "modification_success"]
             }
         },
         "required": ["output"]
@@ -348,9 +168,9 @@ def get_advice(content, order):
     raw_result = extract_and_preprocess_response(api_response)
     result = {
         "output": {
-            "modified_text": raw_result.get("output", {}).get("modified_text", ""),
+            "renewal_text": raw_result.get("output", {}).get("renewal_text", ""),
             "explanation": raw_result.get("output", {}).get("explanation", ""),
-            "additional_sections": raw_result.get("output", {}).get("additional_sections", [])
+            "modification_success": raw_result.get("output", {}).get("modification_success", False),
         }
     }
     return result

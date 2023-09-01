@@ -1,3 +1,4 @@
+import asyncio
 import json
 
 from django.shortcuts import get_object_or_404
@@ -129,4 +130,3 @@ class CallGPTAPIView(APIView):
             res = get_advice(serializer.data['content'], serializer.data['order'])
             return Response(res, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
