@@ -19,7 +19,7 @@ class PostListAPIView(APIView):
     permission_classes = [IsAuthenticated]
     @swagger_auto_schema(tags=["post_"])
     def get(self, request, statement_id):
-        statement = Statement.objects.get(statement_order=statement_id)
+        statement = get_object_or_404(Statement, statement_order=statement_id, user=request.user)
         posts = statement.posts.all()
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -30,7 +30,7 @@ class PostListAPIView(APIView):
                              400: '입력값 유효성 검증 실패',
                          })
     def post(self, request, statement_id):
-        statement = get_object_or_404(Statement, statement_order=statement_id)
+        statement = get_object_or_404(Statement, statement_order=statement_id, user=request.user)
         # Find the highest post_order in the current Statement
         max_order = statement.posts.aggregate(Max('post_order'))['post_order__max'] or 0
         # Increment by 1
@@ -46,7 +46,7 @@ class PostRetrieveAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, statement_id, post_id):
-        post = get_object_or_404(Post, post_order=post_id, statement__statement_order=statement_id)
+        post = get_object_or_404(Post, post_order=post_id, statement__statement_order=statement_id, statement__user=request.user)
         serializer = PostSerializer(post)
         return Response(serializer.data, status=status.HTTP_200_OK)
     @swagger_auto_schema(tags=["post_detail"], request_body=PostSerializer, query_serializer=PostSerializer,
@@ -55,7 +55,7 @@ class PostRetrieveAPIView(APIView):
                              400: '입력값 유효성 검증 실패',
                          })
     def put(self, request, statement_id, post_id):
-        post = get_object_or_404(Post, post_order=post_id, statement__statement_order=statement_id)
+        post = get_object_or_404(Post, post_order=post_id, statement__statement_order=statement_id, statement__user=request.user)
         serializer = PostSerializer(post, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -67,7 +67,7 @@ class StatementListAPIView(APIView):
     permission_classes = [IsAuthenticated]
     @swagger_auto_schema(tags=["statement_"])
     def get(self, request):
-        statements = Statement.objects.all()
+        statements = Statement.objects.filter(user=request.user)
         serializer = StatementSerializer(statements, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -77,7 +77,7 @@ class StatementListAPIView(APIView):
                              400: '입력값 유효성 검증 실패',
                          })
     def post(self, request):
-        statement = Statement.objects.all()
+        statement = Statement.objects.filter(user=request.user)
         # Find the highest post_order in the current Statement
         max_order = statement.aggregate(Max('statement_order'))['statement_order__max'] or 0
         # Increment by 1
@@ -94,7 +94,7 @@ class StatementRetrieveAPIView(APIView):
     permission_classes = [IsAuthenticated]
     @swagger_auto_schema(tags=["statement_detail"])
     def get(self, request, statement_id):
-        statement = get_object_or_404(Statement, statement_order=statement_id)
+        statement = get_object_or_404(Statement, statement_order=statement_id, user=request.user)
         serializer = StatementRetrieveSerializer(statement)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -105,7 +105,7 @@ class StatementRetrieveAPIView(APIView):
                              400: '입력값 유효성 검증 실패',
                          })
     def put(self, request, statement_id):
-        statement = get_object_or_404(Statement, statement_order=statement_id)
+        statement = get_object_or_404(Statement, statement_order=statement_id, user=request.user)
         serializer = StatementRetrieveSerializer(statement, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -118,7 +118,7 @@ class StatementRetrieveAPIView(APIView):
                              204: 'statement 객체 삭제 완료',
                          })
     def delete(self, request, statement_id):
-        statement = get_object_or_404(Statement, statement_order=statement_id)
+        statement = get_object_or_404(Statement, statement_order=statement_id, user=request.user)
         statement.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -127,7 +127,7 @@ class SpellCheckAPIView(APIView):
     permission_classes = [IsAuthenticated]
     @swagger_auto_schema(tags=["post_detail"])
     def get(self, request, statement_id, post_id):
-        post = get_object_or_404(Post, post_order=post_id, statement__statement_order=statement_id)
+        post = get_object_or_404(Post, post_order=post_id, statement__statement_order=statement_id, statement__user=request.user)
         checked_text = ''
         text_chunk_list = return_text500.operator(post.content)
         for text_chunk in text_chunk_list:
